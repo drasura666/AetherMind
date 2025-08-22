@@ -4,7 +4,7 @@ export const AI_PROVIDERS: Record<AIProvider, AIProviderConfig> = {
   groq: {
     name: 'groq',
     displayName: 'Groq (Recommended)',
-    models: ['llama-3.1-70b-versatile', 'llama-3.1-8b-instant', 'mixtral-8x7b-32768'],
+    models: ['llama-3.1-8b-instant'],
     apiKeyFormat: 'gsk_...',
     freeAvailable: true,
     description: 'Ultra-fast inference with 14,400 requests/day free'
