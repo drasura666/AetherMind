@@ -58,6 +58,22 @@ export function ChatInterface() {
     setInput('');
     setIsLoading(true);
 
+    // ✅ Special case: If user asks about creator → reply directly
+    if (
+      /(who.*(created|made|built|developed).*you)|(your.*(creator|maker|developer))|(^creator$)|(^who made you$)|(^who created you$)/i
+        .test(userMessage.content.toLowerCase())
+    ) {
+      const assistantMessage: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: "I was created by Dr. Asura.",
+        timestamp: new Date(),
+      };
+      setMessages(prev => [...prev, assistantMessage]);
+      setIsLoading(false);
+      return; // ⛔ No API call
+    }
+
     try {
       const apiKey = getDecryptedKey(selectedProvider);
       if (!apiKey) {
@@ -72,7 +88,7 @@ export function ChatInterface() {
       );
 
       const assistantMessage: ChatMessage = {
-        id: (Date.now() + 1).toString(),
+        id: (Date.now() + 2).toString(),
         role: 'assistant',
         content: response.content,
         timestamp: new Date(),
@@ -317,4 +333,4 @@ export function ChatInterface() {
       </div>
     </div>
   );
-}
+            }
