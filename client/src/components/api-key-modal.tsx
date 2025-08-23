@@ -147,6 +147,62 @@ export function APIKeyModal({ open, onClose, onSave }: APIKeyModalProps) {
               </Button>
             </div>
             <p className="text-xs text-gray-500 mt-1">Encrypted and stored locally only</p>
+
+            {/* 🔗 Direct links for API key generation */}
+            {selectedProvider === "groq" && (
+              <a
+                href="https://console.groq.com/keys"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-blue-500 hover:underline mt-1 block"
+              >
+                ➕ Get a Groq API Key
+              </a>
+            )}
+
+            {selectedProvider === "openai" && (
+              <a
+                href="https://platform.openai.com/api-keys"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-blue-500 hover:underline mt-1 block"
+              >
+                ➕ Get an OpenAI API Key
+              </a>
+            )}
+
+            {selectedProvider === "huggingface" && (
+              <a
+                href="https://huggingface.co/settings/tokens"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-blue-500 hover:underline mt-1 block"
+              >
+                ➕ Get a HuggingFace Token
+              </a>
+            )}
+
+            {selectedProvider === "mistral" && (
+              <a
+                href="https://console.mistral.ai/api-keys/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-blue-500 hover:underline mt-1 block"
+              >
+                ➕ Get a Mistral API Key
+              </a>
+            )}
+
+            {selectedProvider === "gemini" && (
+              <a
+                href="https://aistudio.google.com/app/apikey"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-blue-500 hover:underline mt-1 block"
+              >
+                ➕ Get a Gemini API Key
+              </a>
+            )}
           </div>
 
           <div className="bg-blue-50 dark:bg-blue-950 p-3 rounded-lg">
