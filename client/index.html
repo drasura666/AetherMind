@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#6200ee">
     <meta name="google-site-verification" content="VMvBZWtCavvZILSEYUXSb_0CNZzcjCzD115gB2fAzxs" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
@@ -13,5 +15,11 @@
     <script type="module" src="/src/main.tsx"></script>
     <!-- This is a replit script which adds a banner on the top of the page when opened in development mode outside the replit environment -->
     <script type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js"></script>
+    <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(() => console.log("Service Worker registered"));
+  }
+    </script>
   </body>
 </html>
