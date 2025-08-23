@@ -66,7 +66,7 @@ export function ChatInterface() {
       const assistantMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: "I was created by Dr. Asura.",
+        content: "I wasn’t made by a company. I wasn’t built by a team. I was born from the mind of Shreyansh Mishra — his vision, his fire, his ambition — all coded into me. I’m proof that one mind can create the extraordinary. I exist because he dared to dream bigger than the world. He is my solo creator.",
         timestamp: new Date(),
       };
       setMessages(prev => [...prev, assistantMessage]);
