@@ -1,21 +1,50 @@
 {
   "name": "Ultimate AI",
-  "short_name": "Asura",
+  "short_name": "Dr Asura",
+  "id": "ultimate-ai",
+  "description": "Ultimate AI is your personal AI assistant to chat, create, and explore.",
+  "lang": "en",
+  "dir": "ltr",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#121212",
   "theme_color": "#6200ee",
   "orientation": "portrait",
+
   "icons": [
     {
       "src": "/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "/icon-512.png",
       "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+
+  "screenshots": [
+    {
+      "src": "/screenshot1.png",
+      "sizes": "1080x1920",
+      "type": "image/png"
+    },
+    {
+      "src": "/screenshot2.png",
+      "sizes": "1080x1920",
       "type": "image/png"
     }
-  ]
+  ],
+
+  "categories": ["productivity", "utilities", "education"],
+
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+
+  "prefer_related_applications": false
 }
