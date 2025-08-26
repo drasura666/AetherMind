@@ -15,7 +15,6 @@ import {
   RefreshCw,
   MessageSquare
 } from 'lucide-react';
-import { getApiKey } from '@/hooks/use-api-keys';
 
 export function CodeLab() {
   const [language, setLanguage] = useState('python');
@@ -48,99 +47,48 @@ for i in range(10):
     { icon: RefreshCw, label: 'Convert to JavaScript', action: 'convert' },
   ];
 
-  // 🔑 Universal AI call using BYOK
-  const callAI = async (prompt: string) => {
-    const apiKey = getApiKey("groq"); // or whichever provider you want default
-    if (!apiKey) throw new Error("No API key set. Please add one in settings.");
-
-    const res = await fetch("/api/ai", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        provider: "groq",                 // or let user pick provider
-        model: "llama-3.1-8b-instant",   // can make dynamic
-        apiKey,
-        messages: [
-          { role: "system", content: "You are an expert programming assistant." },
-          { role: "user", content: prompt }
-        ]
-      })
-    });
-
-    const data = await res.json();
-    if (data.error) throw new Error(data.error);
-    return data.choices?.[0]?.message?.content ?? JSON.stringify(data);
-  };
-
   const handleRunCode = async () => {
     setIsRunning(true);
-    try {
-      const response = await callAI(
-        `Please execute and explain the following ${language} code:\n\n${code}`
-      );
-      setOutput(response);
-    } catch (err: any) {
-      setOutput(`❌ Error: ${err.message}`);
-    } finally {
+    
+    // Simulate code execution
+    setTimeout(() => {
+      const mockOutput = `F(0) = 0
+F(1) = 1
+F(2) = 1
+F(3) = 2
+F(4) = 3
+F(5) = 5
+F(6) = 8
+F(7) = 13
+F(8) = 21
+F(9) = 34
+Execution completed in 0.023s`;
+      
+      setOutput(mockOutput);
       setIsRunning(false);
-    }
+    }, 2000);
   };
 
-  const handleQuickAction = async (action: string) => {
-    try {
-      let prompt = "";
-      switch (action) {
-        case "explain":
-          prompt = `Explain in detail what this ${language} code does:\n\n${code}`;
-          break;
-        case "tests":
-          prompt = `Generate unit tests for this ${language} code:\n\n${code}`;
-          break;
-        case "docs":
-          prompt = `Add documentation and comments to this ${language} code:\n\n${code}`;
-          break;
-        case "convert":
-          prompt = `Convert this code into JavaScript:\n\n${code}`;
-          break;
-        default:
-          prompt = `Analyze this ${language} code:\n\n${code}`;
-      }
-      const response = await callAI(prompt);
-      setOutput(response);
-    } catch (err: any) {
-      setOutput(`❌ Error: ${err.message}`);
-    }
+  const handleQuickAction = (action: string) => {
+    console.log(`Performing action: ${action}`);
+    // TODO: Implement AI-powered code actions
   };
 
-  const handleAskQuestion = async () => {
+  const handleAskQuestion = () => {
     if (!aiQuestion.trim()) return;
-    try {
-      const response = await callAI(
-        `Regarding this ${language} code:\n\n${code}\n\nQuestion: ${aiQuestion}`
-      );
-      setOutput(response);
-      setAiQuestion('');
-    } catch (err: any) {
-      setOutput(`❌ Error: ${err.message}`);
-    }
+    console.log(`AI question: ${aiQuestion}`);
+    setAiQuestion('');
+    // TODO: Implement AI code assistance
   };
 
-  const handleFormatCode = async () => {
-    try {
-      const response = await callAI(`Format and beautify this ${language} code:\n\n${code}`);
-      setCode(response);
-    } catch (err: any) {
-      setOutput(`❌ Error: ${err.message}`);
-    }
+  const handleFormatCode = () => {
+    console.log('Formatting code...');
+    // TODO: Implement code formatting
   };
 
-  const handleDebugCode = async () => {
-    try {
-      const response = await callAI(`Find and fix bugs in this ${language} code:\n\n${code}`);
-      setOutput(response);
-    } catch (err: any) {
-      setOutput(`❌ Error: ${err.message}`);
-    }
+  const handleDebugCode = () => {
+    console.log('Debugging code...');
+    // TODO: Implement AI debugging
   };
 
   return (
@@ -192,9 +140,7 @@ for i in range(10):
           {/* Editor Header */}
           <div className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-2 flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                main.{language === 'cpp' ? 'cpp' : language === 'java' ? 'java' : 'py'}
-              </span>
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">main.{language === 'cpp' ? 'cpp' : language === 'java' ? 'java' : 'py'}</span>
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-warning rounded-full"></div>
                 <span className="text-xs text-gray-600 dark:text-gray-400">Modified</span>
@@ -278,7 +224,7 @@ for i in range(10):
               <CardContent className="space-y-2 text-xs">
                 <div className="flex justify-between">
                   <span className="text-gray-600 dark:text-gray-400">Lines of code:</span>
-                  <span className="font-medium">{code.split('\n').length}</span>
+                  <span className="font-medium">9</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600 dark:text-gray-400">Complexity:</span>
@@ -339,4 +285,4 @@ for i in range(10):
       </div>
     </div>
   );
-              }
+}   
