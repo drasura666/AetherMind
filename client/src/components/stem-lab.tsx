@@ -8,8 +8,7 @@ import {
   Calculator, 
   ArrowsUpFromLine, 
   TrendingUp, 
-  BookOpen,
-  Zap
+  BookOpen
 } from 'lucide-react';
 
 export function STEMLab() {
@@ -18,6 +17,7 @@ export function STEMLab() {
   const [showSteps, setShowSteps] = useState(true);
   const [includeGraphs, setIncludeGraphs] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [solution, setSolution] = useState<string | null>(null);
 
   const subjects = [
     { value: 'mathematics', label: 'Mathematics' },
@@ -45,12 +45,37 @@ export function STEMLab() {
     if (!problem.trim()) return;
     
     setIsLoading(true);
-    
-    // Simulate AI problem solving
-    setTimeout(() => {
+    setSolution(null);
+
+    try {
+      const resp = await fetch('/api/ai/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          provider: 'mistral', // 🔹 default, or make selectable
+          apiKey: localStorage.getItem('ai_api_key'), // 🔹 store per user
+          model: 'mistral-small-latest',
+          messages: [
+            {
+              role: 'system',
+              content: `You are a STEM problem solver. Subject: ${subject}. 
+                Show step-by-step: ${showSteps}. 
+                Include graphs: ${includeGraphs}.`
+            },
+            { role: 'user', content: problem }
+          ]
+        }),
+      });
+
+      const data = await resp.json();
+      if (data.error) throw new Error(data.error);
+
+      setSolution(data.output || 'No solution generated.');
+    } catch (err: any) {
+      setSolution(`❌ Error: ${err.message}`);
+    } finally {
       setIsLoading(false);
-      // In real implementation, this would call the AI with specialized STEM prompts
-    }, 2000);
+    }
   };
 
   const handleToolClick = (action: string) => {
@@ -70,7 +95,7 @@ export function STEMLab() {
       <div className="flex-1 p-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Problem Input */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle>Problem Statement</CardTitle>
@@ -146,9 +171,23 @@ export function STEMLab() {
                 </Button>
               </CardContent>
             </Card>
+
+            {/* Solution Output */}
+            {solution && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Solution</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <pre className="whitespace-pre-wrap text-sm text-gray-800 dark:text-gray-200">
+                    {solution}
+                  </pre>
+                </CardContent>
+              </Card>
+            )}
           </div>
 
-          {/* Tools Panel */}
+          {/* Tools + Recent */}
           <div className="space-y-6">
             <Card>
               <CardHeader>
@@ -185,6 +224,7 @@ export function STEMLab() {
                   {recentProblems.map((problemTitle, index) => (
                     <div
                       key={index}
+                      onClick={() => setProblem(problemTitle)}
                       className="p-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 rounded cursor-pointer"
                       data-testid={`text-recent-problem-${index}`}
                     >
@@ -199,4 +239,4 @@ export function STEMLab() {
       </div>
     </div>
   );
-}
+                }
