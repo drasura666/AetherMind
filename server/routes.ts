@@ -1,6 +1,7 @@
 import type { Express, Request } from "express";
 import { createServer, type Server } from "http";
 import multer from "multer";
+import fetch from "node-fetch"; // make sure node-fetch is installed
 
 interface MulterRequest extends Request {
   file?: Express.Multer.File;
@@ -23,13 +24,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { originalname, buffer, mimetype } = req.file;
       const content = buffer.toString('utf-8');
       
-      // For demo purposes, we'll store the file content directly
-      // In production, you might want to process PDFs, etc.
       const document = await storage.createDocument({
         filename: originalname,
         content: content,
         type: mimetype.includes('pdf') ? 'pdf' : 'text',
-        userId: 'anonymous' // In real app, get from session
+        userId: 'anonymous'
       });
 
       res.json({ document });
@@ -85,20 +84,87 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // AI proxy endpoint to handle API calls with user's keys
+  // ✅ AI proxy endpoint with real provider integration
   app.post("/api/ai/chat", async (req, res) => {
     try {
       const { provider, model, messages, apiKey } = req.body;
-      
-      // This endpoint would proxy to various AI providers
-      // For now, return a placeholder response
-      res.json({ 
-        message: "AI proxy endpoint - implement with actual provider integration",
-        provider,
-        model 
-      });
+
+      let responseText = "Provider not implemented.";
+
+      // Groq
+      if (provider === "groq") {
+        const resp = await fetch("https://api.groq.com/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${apiKey}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ model, messages })
+        });
+        const data = await resp.json();
+        responseText = data.choices?.[0]?.message?.content || "No response";
+      }
+
+      // Mistral
+      if (provider === "mistral") {
+        const resp = await fetch("https://api.mistral.ai/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${apiKey}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ model, messages })
+        });
+        const data = await resp.json();
+        responseText = data.choices?.[0]?.message?.content || "No response";
+      }
+
+      // Cohere
+      if (provider === "cohere") {
+        const resp = await fetch("https://api.cohere.ai/v1/chat", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${apiKey}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ model, messages })
+        });
+        const data = await resp.json();
+        responseText = data.text || data.message || "No response";
+      }
+
+      // Hugging Face
+      if (provider === "huggingface") {
+        const resp = await fetch(`https://api-inference.huggingface.co/models/${model}`, {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${apiKey}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ inputs: messages.map((m: any) => m.content).join("\n") })
+        });
+        const data = await resp.json();
+        responseText = data[0]?.generated_text || JSON.stringify(data);
+      }
+
+      // OpenRouter
+      if (provider === "openrouter") {
+        const resp = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${apiKey}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ model, messages })
+        });
+        const data = await resp.json();
+        responseText = data.choices?.[0]?.message?.content || "No response";
+      }
+
+      res.json({ response: responseText });
     } catch (error) {
-      res.status(500).json({ error: 'AI request failed' });
+      console.error(error);
+      res.status(500).json({ error: "AI request failed" });
     }
   });
 
