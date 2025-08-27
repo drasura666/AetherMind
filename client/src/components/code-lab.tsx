@@ -50,7 +50,7 @@ for i in range(10):
   const handleRunCode = async () => {
     setIsRunning(true);
     
-    // Simulate code execution
+    // Simulated execution
     setTimeout(() => {
       const mockOutput = `F(0) = 0
 F(1) = 1
@@ -93,6 +93,7 @@ Execution completed in 0.023s`;
 
   return (
     <div className="flex-1 flex flex-col" data-testid="code-lab">
+      {/* Header */}
       <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
         <div>
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Code Laboratory</h2>
@@ -134,13 +135,16 @@ Execution completed in 0.023s`;
         </div>
       </div>
 
+      {/* Main Area */}
       <div className="flex-1 flex">
         {/* Code Editor */}
         <div className="flex-1 flex flex-col">
           {/* Editor Header */}
           <div className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-2 flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">main.{language === 'cpp' ? 'cpp' : language === 'java' ? 'java' : 'py'}</span>
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                main.{language === 'cpp' ? 'cpp' : language === 'java' ? 'java' : 'py'}
+              </span>
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-warning rounded-full"></div>
                 <span className="text-xs text-gray-600 dark:text-gray-400">Modified</span>
@@ -166,7 +170,7 @@ Execution completed in 0.023s`;
             </div>
           </div>
 
-          {/* Code Editor Area */}
+          {/* Editor Area */}
           <div className="flex-1 bg-gray-900 text-gray-100 relative">
             <Textarea
               value={code}
@@ -177,7 +181,7 @@ Execution completed in 0.023s`;
             />
           </div>
 
-          {/* Output Console */}
+          {/* Console */}
           <div className="h-48 bg-black text-green-400 p-4 font-mono text-sm overflow-y-auto">
             <div className="text-gray-500 text-xs mb-2">Console Output:</div>
             <pre className="whitespace-pre-wrap" data-testid="text-console-output">
@@ -186,7 +190,7 @@ Execution completed in 0.023s`;
           </div>
         </div>
 
-        {/* AI Assistant Panel */}
+        {/* AI Assistant */}
         <div className="w-80 bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 flex flex-col">
           <div className="border-b border-gray-200 dark:border-gray-700 px-4 py-3">
             <h3 className="font-medium text-gray-900 dark:text-white">AI Code Assistant</h3>
@@ -195,15 +199,16 @@ Execution completed in 0.023s`;
             </p>
           </div>
 
-          {/* AI Suggestions */}
           <div className="flex-1 p-4 space-y-4">
+            {/* Suggestion */}
             <Card className="bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800">
               <CardContent className="p-3">
                 <h4 className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">
                   💡 Optimization Suggestion
                 </h4>
                 <p className="text-xs text-blue-800 dark:text-blue-300 mb-2">
-                  Your fibonacci function uses recursion which can be slow for large numbers. Consider using memoization or an iterative approach.
+                  Your fibonacci function uses recursion which can be slow for large numbers. 
+                  Consider using memoization or an iterative approach.
                 </p>
                 <Button
                   size="sm"
@@ -217,6 +222,7 @@ Execution completed in 0.023s`;
               </CardContent>
             </Card>
 
+            {/* Analysis */}
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm">Code Analysis</CardTitle>
@@ -261,7 +267,7 @@ Execution completed in 0.023s`;
             </div>
           </div>
 
-          {/* Code Chat */}
+          {/* Chat */}
           <div className="border-t border-gray-200 dark:border-gray-700 p-4">
             <div className="flex space-x-2">
               <Input
@@ -285,4 +291,4 @@ Execution completed in 0.023s`;
       </div>
     </div>
   );
-}   
+               }
