@@ -36,6 +36,31 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EXBTNCSRG5"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-EXBTNCSRG5');
+
+  // Track PWA install
+  window.addEventListener('appinstalled', () => {
+    gtag('event', 'pwa_install', {
+      event_category: 'engagement',
+      event_label: 'PWA Installed'
+    });
+  });
+
+  // Track PWA launch
+  if (window.matchMedia('(display-mode: standalone)').matches) {
+    gtag('event', 'pwa_launch', {
+      event_category: 'engagement',
+      event_label: 'PWA Launched'
+    });
+  }
+</script>
   </head>
   <body>
     <div id="root"></div>
