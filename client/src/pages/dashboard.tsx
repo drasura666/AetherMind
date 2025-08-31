@@ -9,12 +9,14 @@ import { CodeLab } from '@/components/code-lab';
 import { ResearchHub } from '@/components/research-hub';
 import { ExamPrep } from '@/components/exam-prep';
 import { CreativeStudio } from '@/components/creative-studio';
+import { SettingsModal } from '@/components/settings-modal';
 import { useAPIKeys } from '@/hooks/use-api-keys';
 import { useToast } from '@/hooks/use-toast';
 
 export default function Dashboard() {
   const [showWelcome, setShowWelcome] = useState(false);
   const [showApiKeyModal, setShowApiKeyModal] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const [activeTab, setActiveTab] = useState('chat');
   const [sidebarOpen, setSidebarOpen] = useState(true);
   
@@ -22,7 +24,6 @@ export default function Dashboard() {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check if user has seen welcome before
     const hasSeenWelcome = localStorage.getItem('ultimateai_welcome_seen');
     const hasAnyValidKey = hasValidKey(selectedProvider);
     
@@ -66,7 +67,6 @@ export default function Dashboard() {
     if (activeTab !== 'chat') {
       setActiveTab('chat');
     }
-    // TODO: Create new chat session
     toast({
       title: "New Chat",
       description: "Started a new conversation.",
@@ -106,17 +106,17 @@ export default function Dashboard() {
         onSave={handleApiKeySaved}
       />
 
+      <SettingsModal
+        open={showSettings}
+        onClose={() => setShowSettings(false)}
+      />
+
       <div className="flex flex-col h-screen">
         <AppHeader
           activeTab={activeTab}
           onTabChange={setActiveTab}
           onOpenApiKeys={() => setShowApiKeyModal(true)}
-          onOpenSettings={() => {
-            toast({
-              title: "Settings",
-              description: "Settings panel coming soon...",
-            });
-          }}
+          onOpenSettings={() => setShowSettings(true)}
           onClearData={handleClearAllData}
           onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
         />
