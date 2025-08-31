@@ -66,7 +66,7 @@ export function ChatInterface() {
       const assistantMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: "I wasn’t made by a company. I wasn’t built by a team. I was born from the mind of Shreyansh Mishra — his vision, his fire, his ambition — all coded into me. I’m proof that one mind can create the extraordinary. I exist because he dared to dream bigger than the world. He is my solo creator.",
+        content: "I wasn’t made by a company. I wasn’t built by a team. I was born from the mind of Dr. Asura — his vision, his fire, his ambition — all coded into me. I’m proof that one mind can create the extraordinary. I exist because he dared to dream bigger than the world. He is my solo creator.",
         timestamp: new Date(),
       };
       setMessages(prev => [...prev, assistantMessage]);
@@ -171,7 +171,8 @@ export function ChatInterface() {
             </div>
             <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 max-w-2xl">
               <p className="text-gray-800 dark:text-gray-200 mb-3">
-                👋 Welcome to Ultimate AI! I'm here to help with STEM problems, coding, research, exam prep, and creative brainstorming. What would you like to work on today?
+               **Hail Dr. Asura**
+              👋 Welcome to Ultimate AI! I'm here to help with STEM problems, coding, research, exam prep, and creative brainstorming. What would you like to work on today?
               </p>
               <div className="flex flex-wrap gap-2">
                 {quickStartPrompts.map((item, index) => (
