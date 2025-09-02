@@ -4,7 +4,7 @@ export const AI_PROVIDERS: Record<AIProvider, AIProviderConfig> = {
   groq: {
     name: 'groq',
     displayName: 'Groq (Recommended)',
-    models: ['llama-3-groq-70b-tool-use', 'llama-3-groq-8b-tool-use', 'mixtral-8x22b', 'gemma-7b', 'llama-3.3-70b-versatile', 'openai/gpt-oss-20b', 'openai/gpt-oss-120b', 'llama-3.1-8b-instant', 'gemma2-9b-it'],
+    models: ['llama-3.3-70b-versatile', 'openai/gpt-oss-20b', 'openai/gpt-oss-120b', 'llama-3.1-8b-instant', 'gemma2-9b-it'],
     apiKeyFormat: 'gsk_...',
     freeAvailable: true,
     description: 'Ultra-fast inference with 14,400 requests/day free'
