@@ -249,21 +249,27 @@ export function ExamPrep() {
    * Tries /api/exam-prep. If missing/fails → fallback generator.
    * Keeps your existing UI completely intact.
    */
+
   const handleGenerateQuestions = async () => {
   if (!studyMaterial.trim()) return;
-
   setIsGenerating(true);
 
+  // split into topics and make a text version for older backends
   const topicArray = studyMaterial
     .split(/[\n,;]+/)
     .map((t) => t.trim())
     .filter(Boolean);
 
+  const topicsText = topicArray.length ? topicArray.join(', ') : studyMaterial;
+  // keep GenerationPayload as topics: string (matches your type)
   const payload: GenerationPayload = {
     examType,
     difficulty,
-    topics: topicArray,
+    topics: topicsText,
   };
+
+  // how many questions we want (same logic as your fallback)
+  const desiredCount = Math.min(10, Math.max(6, topicArray.length + 4));
 
   try {
     const res = await fetch('/api/exam-prep', {
@@ -272,41 +278,68 @@ export function ExamPrep() {
       body: JSON.stringify(payload),
     });
 
+    if (!res.ok) {
+      // show the text body to console for debugging
+      const text = await res.text().catch(() => '');
+      console.warn('exam-prep API returned non-OK', res.status, text);
+      throw new Error(`API error ${res.status}`);
+    }
+
     const data = await res.json();
     console.log('AI generation response:', data);
 
-    let incoming: Question[] = [];
-    if (Array.isArray(data?.questions) && data.questions.length) {
-      incoming = data.questions.map((q: any, i: number) => ({
-        id: Number(q.id ?? i + 1),
-        type: 'multiple-choice',
-        question: String(q.question ?? ''),
-        options: Array.isArray(q.options) ? q.options.map(String) : [],
-        correct: typeof q.correct === 'number' ? q.correct : 0,
-        explanation: q.explanation ? String(q.explanation) : undefined,
-        topic: q.topic ? String(q.topic) : undefined,
+    // Normalize incoming AI questions safely
+    const raw = Array.isArray(data?.questions) ? data.questions : [];
+    const normalizedFromAI: Question[] = raw
+      .map((q: any, i: number) => {
+        const options = Array.isArray(q.options) ? q.options.map(String) : [];
+        // determine correct index robustly
+        let correctIdx = 0;
+        if (typeof q.correct === 'number') correctIdx = q.correct;
+        else if (typeof q.correct === 'string' && options.length) {
+          const idx = options.indexOf(String(q.correct));
+          correctIdx = idx >= 0 ? idx : 0;
+        }
+        return {
+          id: Number(q.id ?? i + 1),
+          type: 'multiple-choice',
+          question: String(q.question ?? `Question ${i + 1}`),
+          options: options.length ? options : ['Option A', 'Option B', 'Option C', 'Option D'],
+          correct: Math.min(Math.max(0, correctIdx), Math.max(0, (options.length || 4) - 1)),
+          explanation: q.explanation ? String(q.explanation) : undefined,
+          topic: q.topic ? String(q.topic) : undefined,
+        } as Question;
+      })
+      .filter((q) => q.question && Array.isArray(q.options) && q.options.length >= 2);
+
+    // Use AI questions, but always fill up to `desiredCount` with fallback
+    let finalQuestions: Question[] = normalizedFromAI.slice(0, desiredCount);
+
+    if (finalQuestions.length < desiredCount) {
+      const needed = desiredCount - finalQuestions.length;
+      const fb = makeFallbackQuestions(topicsText, difficulty);
+      const extra = fb.slice(0, needed).map((q, idx) => ({
+        ...q,
+        id: finalQuestions.length + idx + 1,
       }));
+      finalQuestions = [...finalQuestions, ...extra];
     }
 
-    if (incoming.length) {
-      setQuestions(incoming);
-      setAnswers(Array(incoming.length).fill(-1));
-    } else {
-      console.warn('AI returned no questions, using fallback.');
-      const fb = makeFallbackQuestions(studyMaterial, difficulty);
-      setQuestions(fb);
-      setAnswers(Array(fb.length).fill(-1));
-    }
+    // Ensure ids are sequential (1..N)
+    finalQuestions = finalQuestions.map((q, idx) => ({ ...q, id: idx + 1 }));
+
+    setQuestions(finalQuestions);
+    setAnswers(Array(finalQuestions.length).fill(-1));
   } catch (err) {
     console.error('AI generation failed:', err);
-    const fb = makeFallbackQuestions(studyMaterial, difficulty);
+    // fallback to deterministic offline questions
+    const fb = makeFallbackQuestions(topicsText, difficulty);
     setQuestions(fb);
     setAnswers(Array(fb.length).fill(-1));
   } finally {
     setIsGenerating(false);
   }
 };
-  
 
   /**
    * -------------------- Test Flow --------------------
