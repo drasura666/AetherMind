@@ -250,43 +250,65 @@ export function ExamPrep() {
    * Keeps your existing UI completely intact.
    */
   const handleGenerateQuestions = async () => {
-    if (!studyMaterial.trim()) return;
+  if (!studyMaterial.trim()) return;
 
-    setIsGenerating(true);
-    const payload: GenerationPayload = {
-      examType,
-      difficulty,
-      topics: studyMaterial.trim(),
-    };
+  setIsGenerating(true);
 
-    try {
-      const res = await fetch('/api/exam-prep', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
+  // Split topics by comma, semicolon, or newline
+  const topicArray = studyMaterial
+    .split(/[\n,;]+/)
+    .map((t) => t.trim())
+    .filter(Boolean);
 
-      if (res.ok) {
-        const data = await res.json();
-        const incoming = Array.isArray(data?.questions) ? data.questions : [];
-        if (incoming.length) {
-          const normalized: Question[] = incoming.map((q: any, i: number) => ({
-            id: Number(q.id ?? i + 1),
-            type: 'multiple-choice',
-            question: String(q.question ?? ''),
-            options: Array.isArray(q.options) ? q.options.map(String) : [],
-            correct: typeof q.correct === 'number' ? q.correct : 0,
-            explanation: q.explanation ? String(q.explanation) : undefined,
-            topic: q.topic ? String(q.topic) : undefined,
-          }));
-          if (normalized.length) {
-            setQuestions(normalized);
-            setAnswers(Array(normalized.length).fill(-1));
-            setIsGenerating(false);
-            return;
-          }
-        }
-      }
+  const payload: GenerationPayload = {
+    examType,
+    difficulty,
+    topics: topicArray,
+  };
+
+  try {
+    const res = await fetch('/api/exam-prep', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+    console.log('AI generation response:', data); // debug log
+
+    let incoming: Question[] = [];
+    if (Array.isArray(data?.questions) && data.questions.length) {
+      incoming = data.questions.map((q: any, i: number) => ({
+        id: Number(q.id ?? i + 1),
+        type: 'multiple-choice',
+        question: String(q.question ?? ''),
+        options: Array.isArray(q.options) ? q.options.map(String) : [],
+        correct: typeof q.correct === 'number' ? q.correct : 0,
+        explanation: q.explanation ? String(q.explanation) : undefined,
+        topic: q.topic ? String(q.topic) : undefined,
+      }));
+    }
+
+    if (incoming.length) {
+      // Use AI questions if available
+      setQuestions(incoming);
+      setAnswers(Array(incoming.length).fill(-1));
+    } else {
+      // Fallback if API returned nothing
+      console.warn('AI returned no questions, using fallback.');
+      const fb = makeFallbackQuestions(studyMaterial, difficulty);
+      setQuestions(fb);
+      setAnswers(Array(fb.length).fill(-1));
+    }
+  } catch (err) {
+    console.error('AI generation failed:', err);
+    const fb = makeFallbackQuestions(studyMaterial, difficulty);
+    setQuestions(fb);
+    setAnswers(Array(fb.length).fill(-1));
+  } finally {
+    setIsGenerating(false);
+  }
+};
 
       // fall back if bad response
       const fb = makeFallbackQuestions(payload.topics, difficulty);
