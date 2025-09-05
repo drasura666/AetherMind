@@ -306,20 +306,7 @@ export function ExamPrep() {
     setIsGenerating(false);
   }
 };
-
-      // fall back if bad response
-      const fb = makeFallbackQuestions(payload.topics, difficulty);
-      setQuestions(fb);
-      setAnswers(Array(fb.length).fill(-1));
-    } catch (err) {
-      console.error('AI generation failed:', err);
-      const fb = makeFallbackQuestions(payload.topics, difficulty);
-      setQuestions(fb);
-      setAnswers(Array(fb.length).fill(-1));
-    } finally {
-      setIsGenerating(false);
-    }
-  };
+  
 
   /**
    * -------------------- Test Flow --------------------
