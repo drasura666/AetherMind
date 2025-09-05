@@ -63,6 +63,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Exam prep generator (AI-powered)
+app.post("/api/exam-prep", async (req, res) => {
+  try {
+    const { examType, difficulty, topics, provider, model, apiKey } = req.body;
+
+    // Build a prompt for the AI
+    const messages = [
+      {
+        role: "system",
+        content: "You are an exam question generator. Create multiple-choice questions with 4 options, correct answer index, explanation, and topic.",
+      },
+      {
+        role: "user",
+        content: `Generate 5 ${difficulty} ${examType} questions about ${topics}. 
+Return JSON array with fields: id, type='multiple-choice', question, options, correct (index), explanation, topic.`,
+      },
+    ];
+
+    // Call your existing AI proxy
+    const resp = await fetch("http://localhost:3000/api/ai/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ provider, model, messages, apiKey }),
+    });
+
+    const data = await resp.json();
+
+    // Try parsing the AI's response
+    let questions;
+    try {
+      questions = JSON.parse(data.response);
+    } catch {
+      questions = [{ error: "AI did not return valid JSON", raw: data.response }];
+    }
+
+    res.json({ questions });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to generate questions" });
+  }
+});
+
   app.put("/api/chat-sessions/:id", async (req, res) => {
     try {
       const { id } = req.params;
