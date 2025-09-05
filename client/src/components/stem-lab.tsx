@@ -10,7 +10,7 @@ import {
   TrendingUp, 
   BookOpen
 } from 'lucide-react';
-import { useAPIKeys } from '@/hooks/useAPIKeys'; // ✅ use your custom hook
+import { useAPIKeys } from '@/hooks/use-api-keys'; // <- corrected import
 
 export function STEMLab() {
   const [subject, setSubject] = useState('mathematics');
@@ -20,7 +20,7 @@ export function STEMLab() {
   const [isLoading, setIsLoading] = useState(false);
   const [solution, setSolution] = useState<string | null>(null);
 
-  // ✅ API key + provider handling
+  // use centralized API key hook (same as CodeLab)
   const { selectedProvider, getDecryptedKey } = useAPIKeys();
   const apiKey = getDecryptedKey(selectedProvider);
 
@@ -57,36 +57,43 @@ export function STEMLab() {
     setSolution(null);
 
     try {
+      // only send a model when it makes sense for the selected provider
+      const modelToUse = selectedProvider === 'mistral' ? 'mistral-small-latest' : undefined;
+
+      const bodyPayload: any = {
+        provider: selectedProvider,
+        apiKey,
+        messages: [
+          {
+            role: 'system',
+            content: `You are a STEM problem solver. Subject: ${subject}. Show step-by-step: ${showSteps}. Include graphs: ${includeGraphs}.`
+          },
+          { role: 'user', content: problem }
+        ]
+      };
+
+      if (modelToUse) bodyPayload.model = modelToUse;
+
       const resp = await fetch('/api/ai/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          provider: selectedProvider,
-          apiKey,
-          model: 'mixtral-8x7b-32768', // ✅ choose model depending on provider
-          messages: [
-            {
-              role: 'system',
-              content: `You are a STEM problem solver. Subject: ${subject}. 
-                Show step-by-step: ${showSteps}. 
-                Include graphs: ${includeGraphs}.`
-            },
-            { role: 'user', content: problem }
-          ]
-        }),
+        body: JSON.stringify(bodyPayload),
       });
 
       const data = await resp.json();
       if (data.error) throw new Error(data.error);
 
-      // ✅ Support both "output" and "choices" responses
-      setSolution(
-        data.output || 
-        data.choices?.[0]?.message?.content || 
-        '⚠️ No solution generated.'
-      );
+      // robust extraction: support several response shapes
+      const extracted =
+        data.output ??
+        data.result ??
+        data.choices?.[0]?.message?.content ??
+        data.choices?.[0]?.text ??
+        null;
+
+      setSolution(extracted || '⚠️ No solution generated.');
     } catch (err: any) {
-      setSolution(`❌ Error: ${err.message}`);
+      setSolution(`❌ Error: ${err?.message || err}`);
     } finally {
       setIsLoading(false);
     }
