@@ -10,6 +10,7 @@ import {
   TrendingUp, 
   BookOpen
 } from 'lucide-react';
+import { useAPIKeys } from '@/hooks/useAPIKeys'; // ✅ use your custom hook
 
 export function STEMLab() {
   const [subject, setSubject] = useState('mathematics');
@@ -18,6 +19,10 @@ export function STEMLab() {
   const [includeGraphs, setIncludeGraphs] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [solution, setSolution] = useState<string | null>(null);
+
+  // ✅ API key + provider handling
+  const { selectedProvider, getDecryptedKey } = useAPIKeys();
+  const apiKey = getDecryptedKey(selectedProvider);
 
   const subjects = [
     { value: 'mathematics', label: 'Mathematics' },
@@ -43,7 +48,11 @@ export function STEMLab() {
 
   const handleSolveProblem = async () => {
     if (!problem.trim()) return;
-    
+    if (!apiKey) {
+      setSolution('❌ No valid API key found for the selected provider.');
+      return;
+    }
+
     setIsLoading(true);
     setSolution(null);
 
@@ -52,9 +61,9 @@ export function STEMLab() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          provider: 'mistral', // 🔹 default, or make selectable
-          apiKey: localStorage.getItem('ai_api_key'), // 🔹 store per user
-          model: 'mistral-small-latest',
+          provider: selectedProvider,
+          apiKey,
+          model: 'mixtral-8x7b-32768', // ✅ choose model depending on provider
           messages: [
             {
               role: 'system',
@@ -70,7 +79,12 @@ export function STEMLab() {
       const data = await resp.json();
       if (data.error) throw new Error(data.error);
 
-      setSolution(data.output || 'No solution generated.');
+      // ✅ Support both "output" and "choices" responses
+      setSolution(
+        data.output || 
+        data.choices?.[0]?.message?.content || 
+        '⚠️ No solution generated.'
+      );
     } catch (err: any) {
       setSolution(`❌ Error: ${err.message}`);
     } finally {
@@ -239,4 +253,4 @@ export function STEMLab() {
       </div>
     </div>
   );
-                }
+}
