@@ -254,7 +254,6 @@ export function ExamPrep() {
 
   setIsGenerating(true);
 
-  // Split topics by comma, semicolon, or newline
   const topicArray = studyMaterial
     .split(/[\n,;]+/)
     .map((t) => t.trim())
@@ -274,7 +273,7 @@ export function ExamPrep() {
     });
 
     const data = await res.json();
-    console.log('AI generation response:', data); // debug log
+    console.log('AI generation response:', data);
 
     let incoming: Question[] = [];
     if (Array.isArray(data?.questions) && data.questions.length) {
@@ -290,11 +289,9 @@ export function ExamPrep() {
     }
 
     if (incoming.length) {
-      // Use AI questions if available
       setQuestions(incoming);
       setAnswers(Array(incoming.length).fill(-1));
     } else {
-      // Fallback if API returned nothing
       console.warn('AI returned no questions, using fallback.');
       const fb = makeFallbackQuestions(studyMaterial, difficulty);
       setQuestions(fb);
