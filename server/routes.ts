@@ -143,30 +143,6 @@ app.post("/api/exam-prep", async (req, res) => {
     res.status(500).json({ error: "Failed to generate questions" });
   }
 });
-  
-    // Call your existing AI proxy
-    const resp = await fetch("http://localhost:3000/api/ai/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ provider, model, messages, apiKey }),
-    });
-
-    const data = await resp.json();
-
-    // Try parsing the AI's response
-    let questions;
-    try {
-      questions = JSON.parse(data.response);
-    } catch {
-      questions = [{ error: "AI did not return valid JSON", raw: data.response }];
-    }
-
-    res.json({ questions });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Failed to generate questions" });
-  }
-});
 
   app.put("/api/chat-sessions/:id", async (req, res) => {
     try {
