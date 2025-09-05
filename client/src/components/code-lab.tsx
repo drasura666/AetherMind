@@ -86,26 +86,36 @@ for i in range(10):
     }
   }
 
+  // 🔥 Updated to simulate output with AI
   const handleRunCode = async () => {
-    setIsRunning(true);
-    
-    // Simulated execution
-    setTimeout(() => {
-      const mockOutput = `F(0) = 0
-F(1) = 1
-F(2) = 1
-F(3) = 2
-F(4) = 3
-F(5) = 5
-F(6) = 8
-F(7) = 13
-F(8) = 21
-F(9) = 34
-Execution completed in 0.023s`;
-      
-      setOutput(mockOutput);
+    const apiKey = getKey('groq');
+    if (!apiKey) {
+      toast({
+        title: 'Missing API key',
+        description: 'Add a Groq API key in the API Keys modal to run code.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    try {
+      setIsRunning(true);
+      setOutput('');
+      const res = await sendAIRequest('groq', model, [
+        { role: 'system', content: 'You are a code execution simulator. Run the given code and return ONLY the console output exactly as it would appear, no explanations.' },
+        { role: 'user', content: `Language: ${language}\n\nCode:\n${code}` },
+      ], apiKey);
+
+      setOutput(res.content || 'No output generated.');
+    } catch (err: any) {
+      toast({
+        title: 'Execution Error',
+        description: err?.message || 'Something went wrong',
+        variant: 'destructive',
+      });
+    } finally {
       setIsRunning(false);
-    }, 2000);
+    }
   };
 
   const handleQuickAction = (action: string) => {
@@ -331,4 +341,4 @@ Execution completed in 0.023s`;
       </div>
     </div>
   );
-}
+  }
