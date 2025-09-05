@@ -63,21 +63,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Exam prep generator (AI-powered)
+// Exam prep generator (AI-powered)
 app.post("/api/exam-prep", async (req, res) => {
   try {
     const { examType, difficulty, topics } = req.body;
 
-    // ✅ Auto-pick defaults (you can later plug in user selection if needed)
     const provider = "groq";
-    const model = "llama-3-8b-8192"; // works well for Q&A
-    const apiKey = process.env.GROQ_API_KEY; // load from env (secure)
+    const model = "llama-3-8b-8192";
+    const apiKey = process.env.GROQ_API_KEY;
 
     if (!apiKey) {
       return res.status(400).json({ error: "No API key configured" });
     }
 
-    // Build a prompt for the AI
     const messages = [
       {
         role: "system",
@@ -87,8 +85,9 @@ app.post("/api/exam-prep", async (req, res) => {
       },
       {
         role: "user",
-        content: `Generate 5 ${difficulty} ${examType} mock test questions on: ${Array.isArray(topics) ? topics.join(", ") : topics}.
-Format strictly as:
+        content: `Generate 5 ${difficulty} ${examType} mock test questions on: ${
+          Array.isArray(topics) ? topics.join(", ") : topics
+        }. Format strictly as:
 {
   "questions": [
     {
@@ -105,7 +104,6 @@ Format strictly as:
       },
     ];
 
-    // Call your AI proxy endpoint
     const resp = await fetch("http://localhost:3000/api/ai/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -114,7 +112,6 @@ Format strictly as:
 
     const data = await resp.json();
 
-    // ✅ Try extracting valid JSON from response
     let questions: any[] = [];
     try {
       const match = data.response.match(/\{[\s\S]*\}/);
@@ -126,7 +123,6 @@ Format strictly as:
       console.error("Parse error:", err);
     }
 
-    // Fallback if no questions parsed
     if (!questions.length) {
       questions = [
         {
@@ -147,6 +143,7 @@ Format strictly as:
     res.status(500).json({ error: "Failed to generate questions" });
   }
 });
+  
     // Call your existing AI proxy
     const resp = await fetch("http://localhost:3000/api/ai/chat", {
       method: "POST",
