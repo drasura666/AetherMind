@@ -9,7 +9,6 @@ import {
   Download, 
   FileText, 
   Bug, 
-  Zap,
   BookOpen,
   TestTube,
   RefreshCw,
@@ -35,7 +34,7 @@ for i in range(10):
   const [isRunning, setIsRunning] = useState(false);
   const [aiQuestion, setAiQuestion] = useState('');
 
-  const { getKey } = useAPIKeys();
+  const { getDecryptedKey } = useAPIKeys();
   const { toast } = useToast();
   const [model, setModel] = useState(AI_PROVIDERS['groq'].models[0]);
 
@@ -56,7 +55,7 @@ for i in range(10):
   ];
 
   async function runWithAI(prompt: string) {
-    const apiKey = getKey('groq');
+    const apiKey = getDecryptedKey('groq');
     if (!apiKey) {
       toast({
         title: 'Missing API key',
@@ -74,7 +73,8 @@ for i in range(10):
         { role: 'user', content: prompt },
       ], apiKey);
 
-      setOutput(res.content || '');
+      const aiOutput = res.content || res.choices?.[0]?.message?.content || '';
+      setOutput(aiOutput || 'No output generated.');
     } catch (err: any) {
       toast({
         title: 'AI Error',
@@ -86,9 +86,8 @@ for i in range(10):
     }
   }
 
-  // 🔥 Updated to simulate output with AI
   const handleRunCode = async () => {
-    const apiKey = getKey('groq');
+    const apiKey = getDecryptedKey('groq');
     if (!apiKey) {
       toast({
         title: 'Missing API key',
@@ -106,7 +105,8 @@ for i in range(10):
         { role: 'user', content: `Language: ${language}\n\nCode:\n${code}` },
       ], apiKey);
 
-      setOutput(res.content || 'No output generated.');
+      const aiOutput = res.content || res.choices?.[0]?.message?.content || '';
+      setOutput(aiOutput || 'No output generated.');
     } catch (err: any) {
       toast({
         title: 'Execution Error',
@@ -341,4 +341,4 @@ for i in range(10):
       </div>
     </div>
   );
-  }
+                  }
