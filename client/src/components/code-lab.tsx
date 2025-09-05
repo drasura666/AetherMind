@@ -16,6 +16,10 @@ import {
   MessageSquare
 } from 'lucide-react';
 
+import { useAPIKeys } from '@/hooks/use-api-keys';
+import { AI_PROVIDERS, sendAIRequest } from '@/lib/ai-providers';
+import { useToast } from '@/hooks/use-toast';
+
 export function CodeLab() {
   const [language, setLanguage] = useState('python');
   const [code, setCode] = useState(`# Write your code here...
@@ -30,6 +34,10 @@ for i in range(10):
   const [output, setOutput] = useState('');
   const [isRunning, setIsRunning] = useState(false);
   const [aiQuestion, setAiQuestion] = useState('');
+
+  const { getKey } = useAPIKeys();
+  const { toast } = useToast();
+  const [model, setModel] = useState(AI_PROVIDERS['groq'].models[0]);
 
   const languages = [
     { value: 'python', label: 'Python' },
@@ -46,6 +54,37 @@ for i in range(10):
     { icon: BookOpen, label: 'Add documentation', action: 'docs' },
     { icon: RefreshCw, label: 'Convert to JavaScript', action: 'convert' },
   ];
+
+  async function runWithAI(prompt: string) {
+    const apiKey = getKey('groq');
+    if (!apiKey) {
+      toast({
+        title: 'Missing API key',
+        description: 'Add a Groq API key in the API Keys modal to use AI features.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    try {
+      setIsRunning(true);
+      setOutput('');
+      const res = await sendAIRequest('groq', model, [
+        { role: 'system', content: 'You are an expert code assistant.' },
+        { role: 'user', content: prompt },
+      ], apiKey);
+
+      setOutput(res.content || '');
+    } catch (err: any) {
+      toast({
+        title: 'AI Error',
+        description: err?.message || 'Something went wrong',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsRunning(false);
+    }
+  }
 
   const handleRunCode = async () => {
     setIsRunning(true);
@@ -70,25 +109,26 @@ Execution completed in 0.023s`;
   };
 
   const handleQuickAction = (action: string) => {
-    console.log(`Performing action: ${action}`);
-    // TODO: Implement AI-powered code actions
+    let prompt = '';
+    if (action === 'explain') prompt = `Explain what this code does:\n${code}`;
+    if (action === 'tests') prompt = `Generate test cases for this code:\n${code}`;
+    if (action === 'docs') prompt = `Add documentation comments to this code:\n${code}`;
+    if (action === 'convert') prompt = `Convert this code to JavaScript:\n${code}`;
+    runWithAI(prompt);
   };
 
   const handleAskQuestion = () => {
     if (!aiQuestion.trim()) return;
-    console.log(`AI question: ${aiQuestion}`);
+    runWithAI(`Here is some code:\n${code}\n\nQuestion: ${aiQuestion}`);
     setAiQuestion('');
-    // TODO: Implement AI code assistance
   };
 
   const handleFormatCode = () => {
-    console.log('Formatting code...');
-    // TODO: Implement code formatting
+    runWithAI(`Format this code properly:\n${code}`);
   };
 
   const handleDebugCode = () => {
-    console.log('Debugging code...');
-    // TODO: Implement AI debugging
+    runWithAI(`Debug this code and suggest fixes:\n${code}`);
   };
 
   return (
@@ -185,7 +225,7 @@ Execution completed in 0.023s`;
           <div className="h-48 bg-black text-green-400 p-4 font-mono text-sm overflow-y-auto">
             <div className="text-gray-500 text-xs mb-2">Console Output:</div>
             <pre className="whitespace-pre-wrap" data-testid="text-console-output">
-              {output || 'Click "Run" to execute your code...'}
+              {output || 'Click "Run" or use AI features...'}
             </pre>
           </div>
         </div>
@@ -291,4 +331,4 @@ Execution completed in 0.023s`;
       </div>
     </div>
   );
-               }
+}
