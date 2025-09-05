@@ -10,7 +10,9 @@ import {
   TrendingUp, 
   BookOpen
 } from 'lucide-react';
-import { useAPIKeys } from '@/hooks/use-api-keys'; // <- corrected import
+import { useAPIKeys } from '@/hooks/use-api-keys';
+import { AI_PROVIDERS, sendAIRequest } from '@/lib/ai-providers';
+import { useToast } from '@/hooks/use-toast';
 
 export function STEMLab() {
   const [subject, setSubject] = useState('mathematics');
@@ -20,9 +22,9 @@ export function STEMLab() {
   const [isLoading, setIsLoading] = useState(false);
   const [solution, setSolution] = useState<string | null>(null);
 
-  // use centralized API key hook (same as CodeLab)
-  const { selectedProvider, getDecryptedKey } = useAPIKeys();
-  const apiKey = getDecryptedKey(selectedProvider);
+  const { getDecryptedKey } = useAPIKeys();
+  const { toast } = useToast();
+  const [model] = useState(AI_PROVIDERS['groq'].models[0]);
 
   const subjects = [
     { value: 'mathematics', label: 'Mathematics' },
@@ -48,8 +50,14 @@ export function STEMLab() {
 
   const handleSolveProblem = async () => {
     if (!problem.trim()) return;
+
+    const apiKey = getDecryptedKey('groq');
     if (!apiKey) {
-      setSolution('❌ No valid API key found for the selected provider.');
+      toast({
+        title: 'Missing API key',
+        description: 'Add a Groq API key in the API Keys modal to use STEM Lab.',
+        variant: 'destructive',
+      });
       return;
     }
 
@@ -57,43 +65,25 @@ export function STEMLab() {
     setSolution(null);
 
     try {
-      // only send a model when it makes sense for the selected provider
-      const modelToUse = selectedProvider === 'mistral' ? 'mistral-small-latest' : undefined;
+      const res = await sendAIRequest('groq', model, [
+        {
+          role: 'system',
+          content: `You are a STEM problem solver. Subject: ${subject}. 
+            Show step-by-step: ${showSteps}. 
+            Include graphs: ${includeGraphs}.`
+        },
+        { role: 'user', content: problem }
+      ], apiKey);
 
-      const bodyPayload: any = {
-        provider: selectedProvider,
-        apiKey,
-        messages: [
-          {
-            role: 'system',
-            content: `You are a STEM problem solver. Subject: ${subject}. Show step-by-step: ${showSteps}. Include graphs: ${includeGraphs}.`
-          },
-          { role: 'user', content: problem }
-        ]
-      };
+      const aiOutput =
+        res.content ||
+        res.output ||
+        res.choices?.[0]?.message?.content ||
+        'No solution generated.';
 
-      if (modelToUse) bodyPayload.model = modelToUse;
-
-      const resp = await fetch('/api/ai/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(bodyPayload),
-      });
-
-      const data = await resp.json();
-      if (data.error) throw new Error(data.error);
-
-      // robust extraction: support several response shapes
-      const extracted =
-        data.output ??
-        data.result ??
-        data.choices?.[0]?.message?.content ??
-        data.choices?.[0]?.text ??
-        null;
-
-      setSolution(extracted || '⚠️ No solution generated.');
+      setSolution(aiOutput);
     } catch (err: any) {
-      setSolution(`❌ Error: ${err?.message || err}`);
+      setSolution(`❌ Error: ${err.message}`);
     } finally {
       setIsLoading(false);
     }
