@@ -393,7 +393,7 @@ export function ExamPrep() {
    * -------------------- Render (UI unchanged) --------------------
    */
   return (
-    <div className="flex-1 flex flex-col" data-testid="exam-prep">
+    <div className="flex-1 flex flex-col centered-container" data-testid="exam-prep">
       <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Exam Preparation</h2>
         <p className="text-sm text-gray-600 dark:text-gray-400">
