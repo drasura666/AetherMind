@@ -128,7 +128,7 @@ export function CreativeStudio() {
   };
 
   return (
-    <div className="flex-1 flex flex-col" data-testid="creative-studio">
+    <div className="flex-1 flex flex-col centered-container" data-testid="creative-studio">
       <div className="bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 text-white px-6 py-6">
         <h2 className="text-2xl font-bold mb-2">Creative Studio</h2>
         <p className="text-purple-100">
