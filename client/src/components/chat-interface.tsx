@@ -128,7 +128,8 @@ export function ChatInterface() {
   ];
 
   return (
-    <div className="flex-1 flex flex-col" data-testid="chat-interface">
+  <div className="flex justify-center w-full min-h-screen bg-background">
+    <div className="flex-1 flex flex-col max-w-3xl w-full" data-testid="chat-interface">
       {/* Chat Header */}
       <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
         <div>
@@ -333,5 +334,6 @@ export function ChatInterface() {
         </div>
       </div>
     </div>
-  );
-    }
+  </div>
+);
+}
