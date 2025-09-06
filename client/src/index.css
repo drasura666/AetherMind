@@ -95,3 +95,8 @@
     border: 1px solid rgba(255, 255, 255, 0.2);
   }
 }
+@layer components {
+  .centered-container {
+    @apply mx-auto max-w-xl px-2 flex justify-center;
+  }
+}
