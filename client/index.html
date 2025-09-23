@@ -1,77 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-  <meta name="google-adsense-account" content="ca-pub-3049278418225494">
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <!-- Charset & Viewport -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Title & Description -->
-  <title>Ultimate AI - Your Personal AI Assistant</title>
-  <meta name="description" content="Ultimate AI is a powerful progressive web app that helps you chat, create, and explore with artificial intelligence anytime, anywhere." />
+    <!-- Google AdSense -->
+    <meta name="google-adsense-account" content="ca-pub-3049278418225494" />
 
-  <!-- Canonical URL -->
-  <link rel="canonical" href="https://dr-asura-d1sc.onrender.com/" />
+    <!-- Title & Description -->
+    <title>Ultimate AI - Your Personal AI Assistant</title>
+    <meta
+      name="description"
+      content="Ultimate AI is a powerful progressive web app that helps you chat, create, and explore with artificial intelligence anytime, anywhere."
+    />
 
-  <!-- Open Graph (for Google/FB/LinkedIn) -->
-  <meta property="og:title" content="Ultimate AI - Your Personal AI Assistant" />
-  <meta property="og:description" content="Ultimate AI is a progressive web app that brings intelligent conversations, creativity, and knowledge at your fingertips." />
-  <meta property="og:url" content="https://dr-asura-d1sc.onrender.com/" />
-  <meta property="og:type" content="website" />
-  <meta property="og:image" content="https://dr-asura-d1sc.onrender.com/cover.png" />
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://dr-asura-d1sc.onrender.com/" />
 
-  <!-- Twitter Cards -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Ultimate AI - Your Personal AI Assistant" />
-  <meta name="twitter:description" content="Chat, create, and explore with Ultimate AI." />
-  <meta name="twitter:image" content="https://dr-asura-d1sc.onrender.com/cover.png" />
+    <!-- Open Graph -->
+    <meta property="og:title" content="Ultimate AI - Your Personal AI Assistant" />
+    <meta
+      property="og:description"
+      content="Ultimate AI is a progressive web app that brings intelligent conversations, creativity, and knowledge at your fingertips."
+    />
+    <meta property="og:url" content="https://dr-asura-d1sc.onrender.com/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://dr-asura-d1sc.onrender.com/cover.png" />
 
-  <!-- Google Verification -->
-  <meta name="google-site-verification" content="VMvBZWtCavvZILSEYUXSb_0CNZzcjCzD115gB2fAzxs" />
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Ultimate AI - Your Personal AI Assistant" />
+    <meta name="twitter:description" content="Chat, create, and explore with Ultimate AI." />
+    <meta name="twitter:image" content="https://dr-asura-d1sc.onrender.com/cover.png" />
 
-  <!-- PWA Manifest -->
-  <link rel="manifest" href="/manifest.json" />
-  <meta name="theme-color" content="#6200ee" />
+    <!-- Google Verification -->
+    <meta name="google-site-verification" content="VMvBZWtCavvZILSEYUXSb_0CNZzcjCzD115gB2fAzxs" />
 
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-EXBTNCSRG5"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#6200ee" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
-  gtag('config', 'G-EXBTNCSRG5');
+    <!-- Favicons -->
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
 
-  // Track PWA install
-  window.addEventListener('appinstalled', () => {
-    gtag('event', 'pwa_install', {
-      event_category: 'engagement',
-      event_label: 'PWA Installed'
-    });
-  });
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
 
-  // Track PWA launch
-  if (window.matchMedia('(display-mode: standalone)').matches) {
-    gtag('event', 'pwa_launch', {
-      event_category: 'engagement',
-      event_label: 'PWA Launched'
-    });
-  }
-</script>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-    <!-- This is a replit script which adds a banner on the top of the page when opened in development mode outside the replit environment -->
-    <script type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js"></script>
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-EXBTNCSRG5"></script>
     <script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/service-worker.js')
-      .then(() => console.log("Service Worker registered"));
-  }
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-EXBTNCSRG5");
+
+      // Track PWA install
+      window.addEventListener("appinstalled", () => {
+        gtag("event", "pwa_install", {
+          event_category: "engagement",
+          event_label: "PWA Installed",
+        });
+      });
+
+      // Track PWA launch
+      if (window.matchMedia("(display-mode: standalone)").matches) {
+        gtag("event", "pwa_launch", {
+          event_category: "engagement",
+          event_label: "PWA Launched",
+        });
+      }
+    </script>
+  </head>
+  <body class="bg-white text-gray-900 antialiased">
+    <div id="root"></div>
+
+    <!-- App Entry -->
+    <script type="module" src="/src/main.tsx"></script>
+
+    <!-- Replit Dev Banner (only in dev) -->
+    <script src="https://replit.com/public/js/replit-dev-banner.js"></script>
+
+    <!-- Service Worker -->
+    <script>
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker
+          .register("/service-worker.js")
+          .then(() => console.log("✅ Service Worker registered"))
+          .catch((err) => console.warn("❌ Service Worker failed", err));
+      }
     </script>
   </body>
 </html>
