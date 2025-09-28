@@ -146,7 +146,7 @@ export function APIKeyModal({ open, onClose, onSave }: APIKeyModalProps) {
                 {showKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </Button>
             </div>
-            <p className="text-xs text-gray-500 mt-1">Encrypted and stored locally only</p>
+            <p className="text-xs text-gray-500 mt-1">Your key is stored in your browser's local storage.</p>
 
             {/* 🔗 Direct links for API key generation */}
             {selectedProvider === "groq" && (
