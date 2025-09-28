@@ -1,27 +1,13 @@
-import CryptoJS from 'crypto-js';
-
-const ENCRYPTION_KEY = 'ultimate-ai-secure-key-v1';
+// client/src/lib/crypto.ts
 
 export function encryptAPIKey(apiKey: string): string {
-  try {
-    const encrypted = CryptoJS.AES.encrypt(apiKey, ENCRYPTION_KEY).toString();
-    return encrypted;
-  } catch (error) {
-    throw new Error('Failed to encrypt API key');
-  }
+  // Return the key directly without encryption.
+  return apiKey;
 }
 
 export function decryptAPIKey(encryptedKey: string): string {
-  try {
-    const bytes = CryptoJS.AES.decrypt(encryptedKey, ENCRYPTION_KEY);
-    const decrypted = bytes.toString(CryptoJS.enc.Utf8);
-    if (!decrypted) {
-      throw new Error('Invalid encrypted key');
-    }
-    return decrypted;
-  } catch (error) {
-    throw new Error('Failed to decrypt API key');
-  }
+  // Return the key directly as it is no longer encrypted.
+  return encryptedKey;
 }
 
 export function clearStoredKeys(): void {
