@@ -1,4 +1,4 @@
-Import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { WelcomeModal } from '@/components/welcome-modal';
 import { APIKeyModal } from '@/components/api-key-modal';
 import { AppHeader } from '@/components/app-header';
@@ -14,11 +14,14 @@ import { useAPIKeys } from '@/hooks/use-api-keys';
 import { useToast } from '@/hooks/use-toast';
 
 export default function Dashboard() {
+  // This state is crucial for controlling the sidebar from the header button.
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  // All your other original state and logic is preserved.
   const [showWelcome, setShowWelcome] = useState(false);
   const [showApiKeyModal, setShowApiKeyModal] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [activeTab, setActiveTab] = useState('chat');
-  const [sidebarOpen, setSidebarOpen] = useState(true);
   
   const { hasValidKey, selectedProvider, clearAllKeys } = useAPIKeys();
   const { toast } = useToast();
@@ -75,25 +78,19 @@ export default function Dashboard() {
 
   const renderActiveTab = () => {
     switch (activeTab) {
-      case 'chat':
-        return <ChatInterface />;
-      case 'stem':
-        return <STEMLab />;
-      case 'code':
-        return <CodeLab />;
-      case 'research':
-        return <ResearchHub />;
-      case 'exam':
-        return <ExamPrep />;
-      case 'creative':
-        return <CreativeStudio />;
-      default:
-        return <ChatInterface />;
+      case 'chat': return <ChatInterface />;
+      case 'stem': return <STEMLab />;
+      case 'code': return <CodeLab />;
+      case 'research': return <ResearchHub />;
+      case 'exam': return <ExamPrep />;
+      case 'creative': return <CreativeStudio />;
+      default: return <ChatInterface />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black" data-testid="dashboard">
+    // UPDATED: Uses theme-aware background color from your CSS variables.
+    <div className="min-h-screen bg-background text-foreground" data-testid="dashboard">
       <WelcomeModal
         open={showWelcome}
         onClose={handleWelcomeClose}
@@ -118,18 +115,22 @@ export default function Dashboard() {
           onOpenApiKeys={() => setShowApiKeyModal(true)}
           onOpenSettings={() => setShowSettings(true)}
           onClearData={handleClearAllData}
+          // UPDATED: Correctly connects the header button to the sidebar state.
           onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
         />
 
-        <div className="flex flex-1 relative">
+        {/* UPDATED: Improved layout structure for stability. */}
+        <div className="flex flex-1 overflow-hidden">
           <Sidebar
             onNewChat={handleNewChat}
-            isOpen={sidebarOpen}
+            isOpen={sidebarOpen} // Passes the state to the sidebar
           />
           
-          {renderActiveTab()}
+          <div className="flex-1 flex flex-col">
+             {renderActiveTab()}
+          </div>
         </div>
       </div>
     </div>
   );
-    }
+}
