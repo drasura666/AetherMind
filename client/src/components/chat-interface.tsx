@@ -5,35 +5,43 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { 
   Send, 
   Paperclip, 
-  Image, 
   Download,
   Copy,
   ArrowRight,
   Bot,
   User
 } from 'lucide-react';
-import { ChatMessage } from '@/types/ai';
+import { ChatMessage } from '@/types/ai'; // Adjust paths as needed
 import { useAPIKeys } from '@/hooks/use-api-keys';
 import { AI_PROVIDERS, sendAIRequest } from '@/lib/ai-providers';
 import { useToast } from '@/hooks/use-toast';
+import { ThemeToggle } from '@/components/ThemeToggle'; // <-- IMPORT THE THEME TOGGLE
+
+// Helper component for the dark theme's hexagonal avatar
+const HexAvatar = ({ icon, className }: { icon: React.ReactNode, className?: string }) => (
+  <div className={`hexagon w-10 h-11 flex items-center justify-center flex-shrink-0 ${className}`}>
+    {icon}
+  </div>
+);
 
 export function ChatInterface() {
+  // All your original state and refs are preserved
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [selectedModel, setSelectedModel] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  // ✅ Added for file upload
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
 
+  // All your original hooks are preserved
   const { selectedProvider, getDecryptedKey, hasValidKey } = useAPIKeys();
   const { toast } = useToast();
   
   const isConnected = hasValidKey(selectedProvider);
   const providerConfig = AI_PROVIDERS[selectedProvider];
 
+  // All your original useEffect hooks are preserved
   useEffect(() => {
     if (providerConfig && providerConfig.models.length > 0) {
       setSelectedModel(providerConfig.models[0]);
@@ -41,13 +49,10 @@ export function ChatInterface() {
   }, [selectedProvider, providerConfig]);
 
   useEffect(() => {
-    scrollToBottom();
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
+  // All your original handler functions are preserved
   const handleSend = async () => {
     if ((!input.trim() && uploadedFiles.length === 0) || !isConnected || isLoading) return;
 
@@ -60,10 +65,9 @@ export function ChatInterface() {
 
     setMessages(prev => [...prev, userMessage]);
     setInput('');
-    setUploadedFiles([]); // ✅ clear after sending
+    setUploadedFiles([]);
     setIsLoading(true);
 
-    // Special case: Creator reply
     if (
       /(who.*(created|made|built|developed).*you)|(your.*(creator|maker|developer))|(^creator$)|(^who made you$)|(^who created you$)/i
         .test(userMessage.content.toLowerCase())
@@ -82,21 +86,18 @@ export function ChatInterface() {
     try {
       const apiKey = getDecryptedKey(selectedProvider);
       if (!apiKey) throw new Error('No valid API key found');
-
       const response = await sendAIRequest(
         selectedProvider,
         selectedModel,
         [...messages, userMessage],
         apiKey
       );
-
       const assistantMessage: ChatMessage = {
         id: (Date.now() + 2).toString(),
         role: 'assistant',
         content: response.content,
         timestamp: new Date(),
       };
-
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
       toast({
@@ -123,116 +124,130 @@ export function ChatInterface() {
     });
   };
 
-  const quickStartPrompts = [
+  // Prompts for the Light Theme
+  const lightThemePrompts = [
     { label: 'Physics Problem', prompt: 'Help me solve a physics problem' },
     { label: 'Debug Code', prompt: 'Debug my Python code' },
     { label: 'Research Paper', prompt: 'Help me write a research paper' },
     { label: 'Exam Prep', prompt: 'Create exam questions' },
   ];
+  
+  // Prompts for the AsuraOS Dark Theme
+  const darkThemePrompts = [
+    { label: 'Analyze Quantum Entanglement', prompt: 'Explain the principles of quantum entanglement and its potential applications.' },
+    { label: 'Debug Golang Concurrency', prompt: 'Debug this Golang code for a potential race condition.' },
+    { label: 'Draft Hypothesis', prompt: 'Help me draft a novel hypothesis for dark matter.' },
+    { label: 'Generate System Architecture', prompt: 'Design a scalable microservices architecture for a real-time data processing pipeline.' },
+  ];
 
   return (
-    <div className="flex-1 flex flex-col centered-container" data-testid="chat-interface">
-      {/* Chat Header */}
-      <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
+    <div className="flex-1 flex flex-col bg-background text-foreground dark:font-mono" data-testid="chat-interface">
+      {/* HEADER SECTION */}
+      <div className="bg-card dark:bg-asura-darker border-b dark:border-b-2 dark:border-asura-red/50 px-6 py-4 flex items-center justify-between z-10">
         <div>
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">AI Chat Assistant</h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            Powered by advanced AI models - Ask me anything
-          </p>
+          {/* LIGHT THEME HEADER */}
+          <div className="dark:hidden">
+            <h2 className="text-lg font-semibold text-foreground">AI Chat Assistant</h2>
+            <p className="text-sm text-muted-foreground">Powered by advanced AI models</p>
+          </div>
+          {/* DARK THEME HEADER */}
+          <div className="hidden dark:block">
+            <h2 className="text-lg font-semibold text-asura-red-light tracking-widest">ASURA // AI-CORE</h2>
+            <p className="text-sm text-asura-gray">STATUS: ONLINE // ENGAGED</p>
+          </div>
         </div>
         <div className="flex items-center space-x-3">
           <Select value={selectedModel} onValueChange={setSelectedModel}>
-            <SelectTrigger className="w-40" data-testid="select-model">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {providerConfig?.models.map((model) => (
-                <SelectItem key={model} value={model}>
-                  {model}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {}} // TODO: Implement export
-            title="Export Chat"
-            data-testid="button-export-chat"
-          >
-            <Download className="h-4 w-4" />
-          </Button>
+             <SelectTrigger className="w-48 dark:bg-asura-dark-gray dark:border-asura-red/50 dark:focus:ring-asura-red dark:text-asura-light">
+               <SelectValue placeholder="Select a model" />
+             </SelectTrigger>
+             <SelectContent className="dark:bg-asura-dark-gray dark:border-asura-red/50 dark:text-asura-light">
+               {providerConfig?.models.map((model) => (
+                 <SelectItem key={model} value={model} className="dark:focus:bg-asura-red/30">
+                   {model}
+                 </SelectItem>
+               ))}
+             </SelectContent>
+           </Select>
+          <ThemeToggle /> {/* <-- THEME TOGGLE BUTTON ADDED HERE */}
         </div>
       </div>
 
-      {/* Chat Messages */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-6" data-testid="chat-messages">
+      {/* MESSAGES SECTION */}
+      <div className="flex-1 overflow-y-auto p-6 space-y-6 relative dark:scanline-bg">
         {messages.length === 0 && (
           <div className="flex items-start space-x-4">
-            <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
-              <Bot className="text-white h-4 w-4" />
+            {/* LIGHT THEME AVATAR */}
+            <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center flex-shrink-0 dark:hidden">
+              <Bot className="text-primary-foreground h-4 w-4" />
             </div>
-            <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 max-w-2xl">
-              <p className="text-gray-800 dark:text-gray-200 mb-3">
-               **Hail Dr. Asura**
-              👋 Welcome to Ultimate AI! I'm here to help with STEM problems, coding, research, exam prep, and creative brainstorming. What would you like to work on today?
+            {/* DARK THEME AVATAR */}
+            <div className="hidden dark:flex">
+                <HexAvatar icon={<Bot className="h-5 w-5 text-asura-red" />} className="bg-asura-dark-gray" />
+            </div>
+
+            <div className="bg-card dark:bg-asura-dark-gray rounded-lg p-4 max-w-2xl dark:border dark:border-asura-red/30">
+              <p className="text-card-foreground dark:text-asura-light mb-3 whitespace-pre-wrap">
+                {/* LIGHT THEME WELCOME */}
+                <span className="dark:hidden">
+                  **Hail Dr. Asura** 👋 Welcome to Ultimate AI! I'm here to help with STEM problems, coding, research, exam prep, and creative brainstorming. What would you like to work on today?
+                </span>
+                {/* DARK THEME WELCOME */}
+                <span className="hidden dark:inline">
+                  {`> SYSTEM ONLINE. STATUS: NOMINAL.\n> I am the culmination of Dr. Asura's genius. His will, my command.\n> State your query, and I shall process it. Waste no cycles.`}
+                </span>
               </p>
               <div className="flex flex-wrap gap-2">
-                {quickStartPrompts.map((item, index) => (
-                  <Button
-                    key={index}
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setInput(item.prompt)}
-                    data-testid={`button-quick-start-${index}`}
-                  >
-                    {item.label}
-                  </Button>
-                ))}
+                {/* LIGHT THEME PROMPTS */}
+                <div className="flex flex-wrap gap-2 dark:hidden">
+                  {lightThemePrompts.map((item, index) => (
+                    <Button key={index} variant="outline" size="sm" onClick={() => setInput(item.prompt)}>
+                      {item.label}
+                    </Button>
+                  ))}
+                </div>
+                {/* DARK THEME PROMPTS */}
+                <div className="hidden flex-wrap gap-2 dark:flex">
+                  {darkThemePrompts.map((item, index) => (
+                    <Button key={index} variant="outline" size="sm" onClick={() => setInput(item.prompt)} className="bg-transparent border-asura-red/50 text-asura-red-light hover:bg-asura-red/20 hover:text-asura-red-light">
+                      {item.label}
+                    </Button>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
         )}
 
         {messages.map((message) => (
-          <div
-            key={message.id}
-            className={`flex items-start space-x-4 ${
-              message.role === 'user' ? 'justify-end' : ''
-            }`}
-          >
+          <div key={message.id} className={`flex items-start space-x-4 ${message.role === 'user' ? 'justify-end' : ''}`}>
             {message.role === 'assistant' && (
-              <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
-                <Bot className="text-white h-4 w-4" />
-              </div>
+              <>
+                {/* LIGHT THEME AVATAR */}
+                <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center flex-shrink-0 dark:hidden">
+                    <Bot className="text-primary-foreground h-4 w-4" />
+                </div>
+                {/* DARK THEME AVATAR */}
+                <div className="hidden dark:flex">
+                    <HexAvatar icon={<Bot className="h-5 w-5 text-asura-red" />} className="bg-asura-dark-gray" />
+                </div>
+              </>
             )}
             
-            <div
-              className={`rounded-lg p-4 max-w-2xl ${
+            <div className={`rounded-lg p-4 max-w-2xl ${
                 message.role === 'user'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200'
-              }`}
-            >
+                  ? 'bg-primary text-primary-foreground dark:bg-asura-red/10 dark:text-asura-red-light dark:border dark:border-asura-red/30'
+                  : 'bg-card text-card-foreground dark:bg-asura-dark-gray dark:text-asura-light'
+              }`}>
               <p className="whitespace-pre-wrap">{message.content}</p>
               
               {message.role === 'assistant' && (
-                <div className="flex space-x-2 mt-3">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => copyMessage(message.content)}
-                    data-testid={`button-copy-${message.id}`}
-                  >
+                <div className="flex space-x-2 mt-3 pt-2 border-t border-border/50 dark:border-asura-gray/20">
+                  <Button variant="outline" size="sm" onClick={() => copyMessage(message.content)} className="dark:text-asura-gray dark:hover:text-asura-light dark:hover:bg-asura-gray/20">
                     <Copy className="h-3 w-3 mr-1" />
                     Copy
                   </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {}} // TODO: Implement continue conversation
-                    data-testid={`button-continue-${message.id}`}
-                  >
+                  <Button variant="outline" size="sm" onClick={() => {}} className="dark:text-asura-gray dark:hover:text-asura-light dark:hover:bg-asura-gray/20">
                     <ArrowRight className="h-3 w-3 mr-1" />
                     Continue
                   </Button>
@@ -241,23 +256,29 @@ export function ChatInterface() {
             </div>
             
             {message.role === 'user' && (
-              <div className="w-8 h-8 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center flex-shrink-0">
-                <User className="text-gray-600 dark:text-gray-300 h-4 w-4" />
-              </div>
+              <>
+                {/* LIGHT THEME AVATAR */}
+                <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center flex-shrink-0 dark:hidden">
+                    <User className="text-muted-foreground h-4 w-4" />
+                </div>
+                {/* DARK THEME AVATAR */}
+                <div className="hidden dark:flex">
+                    <HexAvatar icon={<User className="h-5 w-5 text-asura-red-light" />} className="bg-asura-red/10" />
+                </div>
+              </>
             )}
           </div>
         ))}
         
-        {isLoading && (
+        {isLoading && ( /* Loading indicator is mostly the same, just uses CSS variables */
           <div className="flex items-start space-x-4">
-            <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
-              <Bot className="text-white h-4 w-4" />
-            </div>
-            <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4">
+            <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center flex-shrink-0 dark:hidden"><Bot className="text-primary-foreground h-4 w-4" /></div>
+            <div className="hidden dark:flex"><HexAvatar icon={<Bot className="h-5 w-5 text-asura-red animate-pulse-fast" />} className="bg-asura-dark-gray" /></div>
+            <div className="bg-card dark:bg-asura-dark-gray rounded-lg p-4">
               <div className="flex space-x-2">
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                <div className="w-2 h-2 bg-muted-foreground dark:bg-asura-red rounded-full animate-bounce"></div>
+                <div className="w-2 h-2 bg-muted-foreground dark:bg-asura-red rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                <div className="w-2 h-2 bg-muted-foreground dark:bg-asura-red rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
               </div>
             </div>
           </div>
@@ -266,44 +287,19 @@ export function ChatInterface() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Chat Input */}
-      <div className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 p-6">
+      {/* INPUT SECTION */}
+      <div className="bg-card dark:bg-asura-darker border-t dark:border-t-2 dark:border-asura-red/50 p-6">
         <div className="flex items-end space-x-4">
-          {/* ✅ Hidden File Input */}
-          <input
-            type="file"
-            ref={fileInputRef}
-            style={{ display: 'none' }}
-            accept=".pdf,image/*"
-            multiple
-            onChange={(e) => {
-              if (e.target.files) {
-                const files = Array.from(e.target.files);
-                setUploadedFiles(prev => [...prev, ...files]);
-              }
-            }}
-          />
+          <input type="file" ref={fileInputRef} style={{ display: 'none' }} accept=".pdf,image/*" multiple onChange={(e) => { if (e.target.files) { setUploadedFiles(prev => [...prev, ...Array.from(e.target.files!)]); }}}/>
+          <Button variant="ghost" size="sm" onClick={() => fileInputRef.current?.click()} title="Upload File" className="dark:hover:bg-asura-red/20 dark:text-asura-gray dark:hover:text-asura-red-light">
+            <Paperclip className="h-4 w-4" />
+          </Button>
 
-          {/* File Upload Button */}
-          <div className="flex space-x-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => fileInputRef.current?.click()}
-              title="Upload PDF or Image"
-              data-testid="button-upload-file"
-            >
-              <Paperclip className="h-4 w-4" />
-            </Button>
-          </div>
-
-          {/* Message Input */}
           <div className="flex-1">
-            {/* ✅ Preview uploaded files */}
             {uploadedFiles.length > 0 && (
               <div className="mb-2 flex flex-wrap gap-2">
                 {uploadedFiles.map((file, idx) => (
-                  <div key={idx} className="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                  <div key={idx} className="text-xs bg-muted dark:bg-asura-dark-gray px-2 py-1 rounded">
                     {file.name}
                   </div>
                 ))}
@@ -313,44 +309,30 @@ export function ChatInterface() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyPress}
-              placeholder={
-                isConnected
-                  ? "Ask me about STEM, coding, research, or any technical topic..."
-                  : "Please configure your API key first..."
-              }
-              className="resize-none"
+              placeholder={isConnected ? "Ask me anything..." : "Please configure your API key first..."}
+              className="resize-none dark:bg-asura-dark dark:border-asura-red/30 dark:focus-visible:ring-asura-red dark:placeholder:text-asura-gray"
               rows={2}
               disabled={!isConnected}
-              data-testid="textarea-message-input"
             />
           </div>
 
-          {/* Send Button */}
-          <Button
-            onClick={handleSend}
-            disabled={(!input.trim() && uploadedFiles.length === 0) || !isConnected || isLoading}
-            title="Send Message (Ctrl+Enter)"
-            data-testid="button-send-message"
-          >
+          <Button onClick={handleSend} disabled={(!input.trim() && uploadedFiles.length === 0) || !isConnected || isLoading} title="Send Message (Ctrl+Enter)" className="dark:bg-asura-red/90 dark:text-white dark:hover:bg-asura-red">
             <Send className="h-4 w-4" />
           </Button>
         </div>
 
-        {/* Input Helpers */}
-        <div className="mt-2 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+        <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground dark:text-asura-gray">
           <div className="flex items-center space-x-4">
             <span>Press Ctrl+Enter to send</span>
             <span>|</span>
-            <span data-testid="text-token-count">0 tokens</span>
+            <span>0 tokens</span>
           </div>
           <div className="flex items-center space-x-2">
-            <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-success' : 'bg-error'}`}></div>
-            <span data-testid="text-provider-status">
-              {isConnected ? `Connected to ${providerConfig?.displayName}` : 'Not connected'}
-            </span>
+            <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-success dark:bg-asura-red' : 'bg-error dark:bg-asura-gray'}`}></div>
+            <span>{isConnected ? `Connected to ${providerConfig?.displayName}` : 'Not connected'}</span>
           </div>
         </div>
       </div>
     </div>
   );
-                    }
+}
