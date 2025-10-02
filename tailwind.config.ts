@@ -73,6 +73,14 @@ export default {
           border: "var(--sidebar-border)",
           ring: "var(--sidebar-ring)",
         },
+        // AsuraOS Palette (added)
+        'asura-dark': '#0a0a0a',
+        'asura-darker': '#000000',
+        'asura-dark-gray': '#1a1a1a',
+        'asura-red': '#e60039',
+        'asura-red-light': '#ff4d7a',
+        'asura-light': '#e0e0e0',
+        'asura-gray': '#888888',
       },
       fontFamily: {
         sans: ["var(--font-sans)"],
@@ -81,20 +89,12 @@ export default {
       },
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
         },
         "fade-in": {
           "0%": { opacity: "0", transform: "translateY(10px)" },
@@ -104,12 +104,20 @@ export default {
           "0%": { transform: "translateY(100%)" },
           "100%": { transform: "translateY(0)" },
         },
+        // AsuraOS Keyframes (added)
+        scanline: {
+          '0%': { transform: 'translateY(-10%)' },
+          '100%': { transform: 'translateY(10%)' },
+        }
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-in": "fade-in 0.3s ease-out",
         "slide-up": "slide-up 0.3s ease-out",
+        // AsuraOS Animations (added)
+        'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'scanline': 'scanline 8s linear infinite',
       },
     },
   },
