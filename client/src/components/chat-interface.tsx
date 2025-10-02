@@ -5,7 +5,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { 
   Send, 
   Paperclip, 
-  Download,
   Copy,
   ArrowRight,
   Bot,
@@ -15,7 +14,6 @@ import { ChatMessage } from '@/types/ai'; // Adjust paths as needed
 import { useAPIKeys } from '@/hooks/use-api-keys';
 import { AI_PROVIDERS, sendAIRequest } from '@/lib/ai-providers';
 import { useToast } from '@/hooks/use-toast';
-import { ThemeToggle } from '@/components/ThemeToggle'; // <-- IMPORT THE THEME TOGGLE
 
 // Helper component for the dark theme's hexagonal avatar
 const HexAvatar = ({ icon, className }: { icon: React.ReactNode, className?: string }) => (
@@ -142,38 +140,7 @@ export function ChatInterface() {
 
   return (
     <div className="flex-1 flex flex-col bg-background text-foreground dark:font-mono" data-testid="chat-interface">
-      {/* HEADER SECTION */}
-      <div className="bg-card dark:bg-asura-darker border-b dark:border-b-2 dark:border-asura-red/50 px-6 py-4 flex items-center justify-between z-10">
-        <div>
-          {/* LIGHT THEME HEADER */}
-          <div className="dark:hidden">
-            <h2 className="text-lg font-semibold text-foreground">AI Chat Assistant</h2>
-            <p className="text-sm text-muted-foreground">Powered by advanced AI models</p>
-          </div>
-          {/* DARK THEME HEADER */}
-          <div className="hidden dark:block">
-            <h2 className="text-lg font-semibold text-asura-red-light tracking-widest">ASURA // AI-CORE</h2>
-            <p className="text-sm text-asura-gray">STATUS: ONLINE // ENGAGED</p>
-          </div>
-        </div>
-        <div className="flex items-center space-x-3">
-          <Select value={selectedModel} onValueChange={setSelectedModel}>
-             <SelectTrigger className="w-48 dark:bg-asura-dark-gray dark:border-asura-red/50 dark:focus:ring-asura-red dark:text-asura-light">
-               <SelectValue placeholder="Select a model" />
-             </SelectTrigger>
-             <SelectContent className="dark:bg-asura-dark-gray dark:border-asura-red/50 dark:text-asura-light">
-               {providerConfig?.models.map((model) => (
-                 <SelectItem key={model} value={model} className="dark:focus:bg-asura-red/30">
-                   {model}
-                 </SelectItem>
-               ))}
-             </SelectContent>
-           </Select>
-          <ThemeToggle /> {/* <-- THEME TOGGLE BUTTON ADDED HERE */}
-        </div>
-      </div>
-
-      {/* MESSAGES SECTION */}
+      {/* HEADER SECTION IS NOW IN AppHeader.tsx - this is the main content area */}
       <div className="flex-1 overflow-y-auto p-6 space-y-6 relative dark:scanline-bg">
         {messages.length === 0 && (
           <div className="flex items-start space-x-4">
@@ -270,7 +237,7 @@ export function ChatInterface() {
           </div>
         ))}
         
-        {isLoading && ( /* Loading indicator is mostly the same, just uses CSS variables */
+        {isLoading && (
           <div className="flex items-start space-x-4">
             <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center flex-shrink-0 dark:hidden"><Bot className="text-primary-foreground h-4 w-4" /></div>
             <div className="hidden dark:flex"><HexAvatar icon={<Bot className="h-5 w-5 text-asura-red animate-pulse-fast" />} className="bg-asura-dark-gray" /></div>
