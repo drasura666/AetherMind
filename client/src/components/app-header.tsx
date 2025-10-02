@@ -1,3 +1,5 @@
+// client/src/components/app-header.tsx
+
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Brain, Key, Settings, Menu, MessageSquare, Calculator, Code, Microscope, GraduationCap, Lightbulb } from 'lucide-react';
@@ -31,7 +33,7 @@ export function AppHeader({ activeTab, onTabChange, onOpenApiKeys, onOpenSetting
   return (
     <header className="bg-card dark:bg-asura-darker border-b dark:border-b-2 dark:border-asura-red/50 px-4 py-3 z-20">
       <div className="flex items-center justify-between">
-        {/* Left side - Brand and Sidebar Toggle */}
+        {/* Left side - Preserved Original Structure */}
         <div className="flex items-center space-x-4">
           <Button variant="ghost" size="sm" onClick={onToggleSidebar} className="md:hidden dark:text-asura-gray dark:hover:text-asura-light">
             <Menu className="h-5 w-5" />
@@ -48,9 +50,9 @@ export function AppHeader({ activeTab, onTabChange, onOpenApiKeys, onOpenSetting
           </div>
         </div>
 
-        {/* Right side - Navigation Tabs and Settings */}
+        {/* Right side - Preserved Original Structure */}
         <div className="flex items-center space-x-2">
-          {/* Navigation Tabs */}
+          {/* Desktop Navigation Tabs */}
           <div className="hidden lg:flex items-center space-x-1 bg-muted dark:bg-asura-dark-gray rounded-lg p-1">
             {tabs.map((tab) => {
               const Icon = tab.icon;
