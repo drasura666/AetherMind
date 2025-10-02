@@ -67,6 +67,7 @@ export default function Dashboard() {
     if (activeTab !== 'chat') {
       setActiveTab('chat');
     }
+    // You might want to add logic here to actually clear the chat messages
     toast({
       title: "New Chat",
       description: "Started a new conversation.",
@@ -75,41 +76,21 @@ export default function Dashboard() {
 
   const renderActiveTab = () => {
     switch (activeTab) {
-      case 'chat':
-        return <ChatInterface />;
-      case 'stem':
-        return <STEMLab />;
-      case 'code':
-        return <CodeLab />;
-      case 'research':
-        return <ResearchHub />;
-      case 'exam':
-        return <ExamPrep />;
-      case 'creative':
-        return <CreativeStudio />;
-      default:
-        return <ChatInterface />;
+      case 'chat': return <ChatInterface />;
+      case 'stem': return <STEMLab />;
+      case 'code': return <CodeLab />;
+      case 'research': return <ResearchHub />;
+      case 'exam': return <ExamPrep />;
+      case 'creative': return <CreativeStudio />;
+      default: return <ChatInterface />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black" data-testid="dashboard">
-      <WelcomeModal
-        open={showWelcome}
-        onClose={handleWelcomeClose}
-        onGetStarted={handleGetStarted}
-      />
-      
-      <APIKeyModal
-        open={showApiKeyModal}
-        onClose={() => setShowApiKeyModal(false)}
-        onSave={handleApiKeySaved}
-      />
-
-      <SettingsModal
-        open={showSettings}
-        onClose={() => setShowSettings(false)}
-      />
+    <div className="min-h-screen bg-background text-foreground" data-testid="dashboard">
+      <WelcomeModal open={showWelcome} onClose={handleWelcomeClose} onGetStarted={handleGetStarted} />
+      <APIKeyModal open={showApiKeyModal} onClose={() => setShowApiKeyModal(false)} onSave={handleApiKeySaved} />
+      <SettingsModal open={showSettings} onClose={() => setShowSettings(false)} />
 
       <div className="flex flex-col h-screen">
         <AppHeader
@@ -120,14 +101,11 @@ export default function Dashboard() {
           onClearData={handleClearAllData}
           onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
         />
-
-        <div className="flex flex-1 relative">
-          <Sidebar
-            onNewChat={handleNewChat}
-            isOpen={sidebarOpen}
-          />
-          
-          {renderActiveTab()}
+        <div className="flex flex-1 overflow-hidden">
+          <Sidebar onNewChat={handleNewChat} isOpen={sidebarOpen} />
+          <div className="flex-1 flex flex-col">
+            {renderActiveTab()}
+          </div>
         </div>
       </div>
     </div>
