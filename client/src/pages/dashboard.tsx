@@ -12,13 +12,14 @@ import { CreativeStudio } from '@/components/creative-studio';
 import { SettingsModal } from '@/components/settings-modal';
 import { useAPIKeys } from '@/hooks/use-api-keys';
 import { useToast } from '@/hooks/use-toast';
+import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'; // <-- Import layout components
 
 export default function Dashboard() {
+  // All your original state and logic is preserved
   const [showWelcome, setShowWelcome] = useState(false);
   const [showApiKeyModal, setShowApiKeyModal] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [activeTab, setActiveTab] = useState('chat');
-  const [sidebarOpen, setSidebarOpen] = useState(true);
   
   const { hasValidKey, selectedProvider, clearAllKeys } = useAPIKeys();
   const { toast } = useToast();
@@ -93,7 +94,8 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black" data-testid="dashboard">
+    // Uses theme-aware background from your CSS
+    <div className="min-h-screen bg-background text-foreground" data-testid="dashboard">
       <WelcomeModal
         open={showWelcome}
         onClose={handleWelcomeClose}
@@ -111,25 +113,29 @@ export default function Dashboard() {
         onClose={() => setShowSettings(false)}
       />
 
-      <div className="flex flex-col h-screen">
-        <AppHeader
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-          onOpenApiKeys={() => setShowApiKeyModal(true)}
-          onOpenSettings={() => setShowSettings(true)}
-          onClearData={handleClearAllData}
-          onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
-        />
-
-        <div className="flex flex-1 relative">
-          <Sidebar
-            onNewChat={handleNewChat}
-            isOpen={sidebarOpen}
-          />
+      {/* The SidebarProvider now wraps the entire layout */}
+      <SidebarProvider>
+        <div className="flex h-screen">
+          <Sidebar onNewChat={handleNewChat} />
           
-          {renderActiveTab()}
+          {/* SidebarInset is the main content area that correctly adjusts itself */}
+          <SidebarInset>
+            <div className="flex flex-col h-full">
+              <AppHeader
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+                onOpenApiKeys={() => setShowApiKeyModal(true)}
+                onOpenSettings={() => setShowSettings(true)}
+                onClearData={handleClearAllData}
+                onToggleSidebar={() => {}} // The sidebar's own trigger now handles this
+              />
+              <div className="flex-1 flex overflow-hidden">
+                {renderActiveTab()}
+              </div>
+            </div>
+          </SidebarInset>
         </div>
-      </div>
+      </SidebarProvider>
     </div>
   );
 }
