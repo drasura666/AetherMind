@@ -56,7 +56,6 @@ export function Sidebar({ onNewChat, isOpen }: SidebarProps) {
 
   return (
     <div className="w-64 bg-white dark:bg-black border-r border-gray-200 dark:border-gray-800 flex flex-col h-full">
-      {/* New Chat Button */}
       <div className="p-3 border-b border-gray-200 dark:border-gray-800">
         <Button
           onClick={onNewChat}
@@ -67,8 +66,6 @@ export function Sidebar({ onNewChat, isOpen }: SidebarProps) {
           New Chat
         </Button>
       </div>
-
-      {/* Search */}
       <div className="p-3 border-b border-gray-200 dark:border-gray-800">
         <div className="relative">
           <Input
@@ -80,10 +77,7 @@ export function Sidebar({ onNewChat, isOpen }: SidebarProps) {
           <Search className="absolute left-3 top-3 h-3 w-3 text-gray-400" />
         </div>
       </div>
-
-      {/* Chat History */}
       <div className="flex-1 overflow-y-auto">
-        {/* Pinned Chats */}
         {pinnedChats.length > 0 && (
           <div className="p-3">
             <div className="flex items-center space-x-2 mb-3">
@@ -92,37 +86,23 @@ export function Sidebar({ onNewChat, isOpen }: SidebarProps) {
             </div>
             <div className="space-y-1">
               {pinnedChats.map((chat) => (
-                <div
-                  key={chat.id}
-                  className="group flex items-center justify-between p-2 hover:bg-gray-100 dark:hover:bg-gray-900 rounded-lg cursor-pointer"
-                  data-testid={`chat-pinned-${chat.id}`}
-                >
+                <div key={chat.id} className="group flex items-center justify-between p-2 hover:bg-gray-100 dark:hover:bg-gray-900 rounded-lg cursor-pointer">
                   <div className="flex items-center space-x-2 flex-1 min-w-0">
                     <MessageSquare className="h-3 w-3 text-gray-400 flex-shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                        {chat.title}
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        {chat.timestamp}
-                      </p>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{chat.title}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">{chat.timestamp}</p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100">
-                    <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                      <Pin className="h-3 w-3 fill-current text-yellow-500" />
-                    </Button>
-                    <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                      <MoreHorizontal className="h-3 w-3" />
-                    </Button>
+                    <Button variant="ghost" size="sm" className="h-6 w-6 p-0"><Pin className="h-3 w-3 fill-current text-yellow-500" /></Button>
+                    <Button variant="ghost" size="sm" className="h-6 w-6 p-0"><MoreHorizontal className="h-3 w-3" /></Button>
                   </div>
                 </div>
               ))}
             </div>
           </div>
         )}
-
-        {/* Recent Chats */}
         <div className="p-3">
           <div className="flex items-center space-x-2 mb-3">
             <Clock className="h-3 w-3 text-gray-500" />
@@ -130,32 +110,18 @@ export function Sidebar({ onNewChat, isOpen }: SidebarProps) {
           </div>
           <div className="space-y-1">
             {regularChats.map((chat) => (
-              <div
-                key={chat.id}
-                className="group flex items-center justify-between p-2 hover:bg-gray-100 dark:hover:bg-gray-900 rounded-lg cursor-pointer"
-                data-testid={`chat-recent-${chat.id}`}
-              >
+              <div key={chat.id} className="group flex items-center justify-between p-2 hover:bg-gray-100 dark:hover:bg-gray-900 rounded-lg cursor-pointer">
                 <div className="flex items-center space-x-2 flex-1 min-w-0">
                   <MessageSquare className="h-3 w-3 text-gray-400 flex-shrink-0" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                      {chat.title}
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      {chat.timestamp}
-                    </p>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{chat.title}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{chat.timestamp}</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100">
-                  <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                    <Edit3 className="h-3 w-3" />
-                  </Button>
-                  <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                    <Pin className="h-3 w-3" />
-                  </Button>
-                  <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                    <MoreHorizontal className="h-3 w-3" />
-                  </Button>
+                  <Button variant="ghost" size="sm" className="h-6 w-6 p-0"><Edit3 className="h-3 w-3" /></Button>
+                  <Button variant="ghost" size="sm" className="h-6 w-6 p-0"><Pin className="h-3 w-3" /></Button>
+                  <Button variant="ghost" size="sm" className="h-6 w-6 p-0"><MoreHorizontal className="h-3 w-3" /></Button>
                 </div>
               </div>
             ))}
