@@ -16,37 +16,13 @@ interface SidebarProps {
 }
 
 export function Sidebar({ onNewChat, isOpen }: SidebarProps) {
+  // All your original data and logic is preserved
   const recentChats = [
-    { 
-      id: 1, 
-      title: 'Quantum Computing Principles', 
-      timestamp: '2 hours ago',
-      pinned: true 
-    },
-    { 
-      id: 2, 
-      title: 'Python Data Structures Deep Dive', 
-      timestamp: '5 hours ago',
-      pinned: false 
-    },
-    { 
-      id: 3, 
-      title: 'Research Paper Analysis - ML', 
-      timestamp: '1 day ago',
-      pinned: true 
-    },
-    { 
-      id: 4, 
-      title: 'Creative Writing: Sci-Fi World', 
-      timestamp: '2 days ago',
-      pinned: false 
-    },
-    { 
-      id: 5, 
-      title: 'STEM Problem Solving Session', 
-      timestamp: '3 days ago',
-      pinned: false 
-    }
+    { id: 1, title: 'Quantum Computing Principles', timestamp: '2 hours ago', pinned: true },
+    { id: 2, title: 'Python Data Structures Deep Dive', timestamp: '5 hours ago', pinned: false },
+    { id: 3, title: 'Research Paper Analysis - ML', timestamp: '1 day ago', pinned: true },
+    { id: 4, title: 'Creative Writing: Sci-Fi World', timestamp: '2 days ago', pinned: false },
+    { id: 5, title: 'STEM Problem Solving Session', timestamp: '3 days ago', pinned: false }
   ];
 
   const pinnedChats = recentChats.filter(chat => chat.pinned);
@@ -55,12 +31,14 @@ export function Sidebar({ onNewChat, isOpen }: SidebarProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="w-64 bg-white dark:bg-black border-r border-gray-200 dark:border-gray-800 flex flex-col h-full">
+    // UPDATED: Theme-aware background and borders
+    <div className="w-64 bg-card dark:bg-asura-darker border-r dark:border-r-2 dark:border-asura-red/50 flex flex-col h-full transition-all duration-300">
       {/* New Chat Button */}
-      <div className="p-3 border-b border-gray-200 dark:border-gray-800">
+      <div className="p-3 border-b dark:border-asura-red/30">
         <Button
           onClick={onNewChat}
-          className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
+          // UPDATED: Theme-aware button styles
+          className="w-full bg-primary text-primary-foreground dark:bg-transparent dark:border dark:border-asura-red dark:text-asura-red-light dark:hover:bg-asura-red/20"
           data-testid="button-new-chat"
         >
           <Plus className="h-4 w-4 mr-2" />
@@ -69,15 +47,16 @@ export function Sidebar({ onNewChat, isOpen }: SidebarProps) {
       </div>
 
       {/* Search */}
-      <div className="p-3 border-b border-gray-200 dark:border-gray-800">
+      <div className="p-3 border-b dark:border-asura-red/30">
         <div className="relative">
           <Input
             type="text"
             placeholder="Search chats..."
-            className="pl-9 text-sm"
+            // UPDATED: Theme-aware input styles
+            className="pl-9 text-sm bg-background dark:bg-asura-dark-gray dark:border-asura-red/50"
             data-testid="input-search-chats"
           />
-          <Search className="absolute left-3 top-3 h-3 w-3 text-gray-400" />
+          <Search className="absolute left-3 top-3 h-3 w-3 text-muted-foreground" />
         </div>
       </div>
 
@@ -87,32 +66,33 @@ export function Sidebar({ onNewChat, isOpen }: SidebarProps) {
         {pinnedChats.length > 0 && (
           <div className="p-3">
             <div className="flex items-center space-x-2 mb-3">
-              <Pin className="h-3 w-3 text-gray-500" />
-              <h3 className="text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Pinned</h3>
+              <Pin className="h-3 w-3 text-muted-foreground dark:text-asura-gray" />
+              <h3 className="text-xs font-medium text-muted-foreground dark:text-asura-gray uppercase tracking-wider">Pinned</h3>
             </div>
             <div className="space-y-1">
               {pinnedChats.map((chat) => (
                 <div
                   key={chat.id}
-                  className="group flex items-center justify-between p-2 hover:bg-gray-100 dark:hover:bg-gray-900 rounded-lg cursor-pointer"
+                  // UPDATED: Theme-aware hover styles
+                  className="group flex items-center justify-between p-2 hover:bg-muted dark:hover:bg-asura-red/20 rounded-lg cursor-pointer"
                   data-testid={`chat-pinned-${chat.id}`}
                 >
                   <div className="flex items-center space-x-2 flex-1 min-w-0">
-                    <MessageSquare className="h-3 w-3 text-gray-400 flex-shrink-0" />
+                    <MessageSquare className="h-3 w-3 text-muted-foreground dark:text-asura-gray flex-shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                      <p className="text-sm font-medium text-foreground dark:text-asura-light truncate">
                         {chat.title}
                       </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                      <p className="text-xs text-muted-foreground dark:text-asura-gray">
                         {chat.timestamp}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100">
-                    <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                    <Button variant="ghost" size="sm" className="h-6 w-6 p-0 dark:text-asura-gray dark:hover:text-asura-light">
                       <Pin className="h-3 w-3 fill-current text-yellow-500" />
                     </Button>
-                    <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                    <Button variant="ghost" size="sm" className="h-6 w-6 p-0 dark:text-asura-gray dark:hover:text-asura-light">
                       <MoreHorizontal className="h-3 w-3" />
                     </Button>
                   </div>
@@ -125,35 +105,36 @@ export function Sidebar({ onNewChat, isOpen }: SidebarProps) {
         {/* Recent Chats */}
         <div className="p-3">
           <div className="flex items-center space-x-2 mb-3">
-            <Clock className="h-3 w-3 text-gray-500" />
-            <h3 className="text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Recent</h3>
+            <Clock className="h-3 w-3 text-muted-foreground dark:text-asura-gray" />
+            <h3 className="text-xs font-medium text-muted-foreground dark:text-asura-gray uppercase tracking-wider">Recent</h3>
           </div>
           <div className="space-y-1">
             {regularChats.map((chat) => (
               <div
                 key={chat.id}
-                className="group flex items-center justify-between p-2 hover:bg-gray-100 dark:hover:bg-gray-900 rounded-lg cursor-pointer"
+                // UPDATED: Theme-aware hover styles
+                className="group flex items-center justify-between p-2 hover:bg-muted dark:hover:bg-asura-red/20 rounded-lg cursor-pointer"
                 data-testid={`chat-recent-${chat.id}`}
               >
                 <div className="flex items-center space-x-2 flex-1 min-w-0">
-                  <MessageSquare className="h-3 w-3 text-gray-400 flex-shrink-0" />
+                  <MessageSquare className="h-3 w-3 text-muted-foreground dark:text-asura-gray flex-shrink-0" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                    <p className="text-sm font-medium text-foreground dark:text-asura-light truncate">
                       {chat.title}
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                    <p className="text-xs text-muted-foreground dark:text-asura-gray">
                       {chat.timestamp}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100">
-                  <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                  <Button variant="ghost" size="sm" className="h-6 w-6 p-0 dark:text-asura-gray dark:hover:text-asura-light">
                     <Edit3 className="h-3 w-3" />
                   </Button>
-                  <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                  <Button variant="ghost" size="sm" className="h-6 w-6 p-0 dark:text-asura-gray dark:hover:text-asura-light">
                     <Pin className="h-3 w-3" />
                   </Button>
-                  <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                  <Button variant="ghost" size="sm" className="h-6 w-6 p-0 dark:text-asura-gray dark:hover:text-asura-light">
                     <MoreHorizontal className="h-3 w-3" />
                   </Button>
                 </div>
