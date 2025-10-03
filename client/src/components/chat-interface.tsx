@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   Send, 
   Paperclip, 
@@ -14,6 +13,7 @@ import { ChatMessage } from '@/types/ai'; // Adjust paths as needed
 import { useAPIKeys } from '@/hooks/use-api-keys';
 import { AI_PROVIDERS, sendAIRequest } from '@/lib/ai-providers';
 import { useToast } from '@/hooks/use-toast';
+import ReactMarkdown from 'react-markdown'; // <-- ADDED: For bold text formatting
 
 // Helper component for the dark theme's hexagonal avatar
 const HexAvatar = ({ icon, className }: { icon: React.ReactNode, className?: string }) => (
@@ -140,46 +140,38 @@ export function ChatInterface() {
 
   return (
     <div className="flex-1 flex flex-col bg-background text-foreground dark:font-mono" data-testid="chat-interface">
-      {/* HEADER SECTION IS NOW IN AppHeader.tsx - this is the main content area */}
       <div className="flex-1 overflow-y-auto p-6 space-y-6 relative dark:scanline-bg">
         {messages.length === 0 && (
           <div className="flex items-start space-x-4">
-            {/* LIGHT THEME AVATAR */}
+            {/* Avatars */}
             <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center flex-shrink-0 dark:hidden">
               <Bot className="text-primary-foreground h-4 w-4" />
             </div>
-            {/* DARK THEME AVATAR */}
             <div className="hidden dark:flex">
                 <HexAvatar icon={<Bot className="h-5 w-5 text-asura-red" />} className="bg-asura-dark-gray" />
             </div>
 
+            {/* Welcome Bubble */}
             <div className="bg-card dark:bg-asura-dark-gray rounded-lg p-4 max-w-2xl dark:border dark:border-asura-red/30">
-              <p className="text-card-foreground dark:text-asura-light mb-3 whitespace-pre-wrap">
-                {/* LIGHT THEME WELCOME */}
+              <div className="prose dark:prose-invert max-w-none text-card-foreground dark:text-asura-light mb-3">
                 <span className="dark:hidden">
-                  **Hail Dr. Asura** 👋 Welcome to Ultimate AI! I'm here to help with STEM problems, coding, research, exam prep, and creative brainstorming. What would you like to work on today?
+                  <ReactMarkdown>
+                    {"**Hail Dr. Asura** 👋 Welcome to Ultimate AI! I'm here to help with STEM problems, coding, research, exam prep, and creative brainstorming. What would you like to work on today?"}
+                  </ReactMarkdown>
                 </span>
-                {/* DARK THEME WELCOME */}
                 <span className="hidden dark:inline">
-                  {`> SYSTEM ONLINE. STATUS: NOMINAL.\n> I am the culmination of Dr. Asura's genius. His will, my command.\n> State your query, and I shall process it. Waste no cycles.`}
+                  <ReactMarkdown>
+                    {`> SYSTEM ONLINE. STATUS: NOMINAL.\n> I am the culmination of Dr. Asura's genius. His will, my command.\n> State your query, and I shall process it. Waste no cycles.`}
+                  </ReactMarkdown>
                 </span>
-              </p>
+              </div>
+              {/* Prompt Buttons */}
               <div className="flex flex-wrap gap-2">
-                {/* LIGHT THEME PROMPTS */}
                 <div className="flex flex-wrap gap-2 dark:hidden">
-                  {lightThemePrompts.map((item, index) => (
-                    <Button key={index} variant="outline" size="sm" onClick={() => setInput(item.prompt)}>
-                      {item.label}
-                    </Button>
-                  ))}
+                  {lightThemePrompts.map((item, index) => ( <Button key={index} variant="outline" size="sm" onClick={() => setInput(item.prompt)}>{item.label}</Button> ))}
                 </div>
-                {/* DARK THEME PROMPTS */}
                 <div className="hidden flex-wrap gap-2 dark:flex">
-                  {darkThemePrompts.map((item, index) => (
-                    <Button key={index} variant="outline" size="sm" onClick={() => setInput(item.prompt)} className="bg-transparent border-asura-red/50 text-asura-red-light hover:bg-asura-red/20 hover:text-asura-red-light">
-                      {item.label}
-                    </Button>
-                  ))}
+                  {darkThemePrompts.map((item, index) => ( <Button key={index} variant="outline" size="sm" onClick={() => setInput(item.prompt)} className="bg-transparent border-asura-red/50 text-asura-red-light hover:bg-asura-red/20 hover:text-asura-red-light">{item.label}</Button> ))}
                 </div>
               </div>
             </div>
@@ -190,45 +182,28 @@ export function ChatInterface() {
           <div key={message.id} className={`flex items-start space-x-4 ${message.role === 'user' ? 'justify-end' : ''}`}>
             {message.role === 'assistant' && (
               <>
-                {/* LIGHT THEME AVATAR */}
                 <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center flex-shrink-0 dark:hidden">
                     <Bot className="text-primary-foreground h-4 w-4" />
                 </div>
-                {/* DARK THEME AVATAR */}
                 <div className="hidden dark:flex">
                     <HexAvatar icon={<Bot className="h-5 w-5 text-asura-red" />} className="bg-asura-dark-gray" />
                 </div>
               </>
             )}
             
-            <div className={`rounded-lg p-4 max-w-2xl ${
+            <div className={`rounded-lg p-4 max-w-2xl prose dark:prose-invert max-w-none ${
                 message.role === 'user'
                   ? 'bg-primary text-primary-foreground dark:bg-asura-red/10 dark:text-asura-red-light dark:border dark:border-asura-red/30'
                   : 'bg-card text-card-foreground dark:bg-asura-dark-gray dark:text-asura-light'
               }`}>
-              <p className="whitespace-pre-wrap">{message.content}</p>
-              
-              {message.role === 'assistant' && (
-                <div className="flex space-x-2 mt-3 pt-2 border-t border-border/50 dark:border-asura-gray/20">
-                  <Button variant="outline" size="sm" onClick={() => copyMessage(message.content)} className="dark:text-asura-gray dark:hover:text-asura-light dark:hover:bg-asura-gray/20">
-                    <Copy className="h-3 w-3 mr-1" />
-                    Copy
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={() => {}} className="dark:text-asura-gray dark:hover:text-asura-light dark:hover:bg-asura-gray/20">
-                    <ArrowRight className="h-3 w-3 mr-1" />
-                    Continue
-                  </Button>
-                </div>
-              )}
+              <ReactMarkdown>{message.content}</ReactMarkdown>
             </div>
             
             {message.role === 'user' && (
               <>
-                {/* LIGHT THEME AVATAR */}
                 <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center flex-shrink-0 dark:hidden">
                     <User className="text-muted-foreground h-4 w-4" />
                 </div>
-                {/* DARK THEME AVATAR */}
                 <div className="hidden dark:flex">
                     <HexAvatar icon={<User className="h-5 w-5 text-asura-red-light" />} className="bg-asura-red/10" />
                 </div>
@@ -254,7 +229,6 @@ export function ChatInterface() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* INPUT SECTION */}
       <div className="bg-card dark:bg-asura-darker border-t dark:border-t-2 dark:border-asura-red/50 p-6">
         <div className="flex items-end space-x-4">
           <input type="file" ref={fileInputRef} style={{ display: 'none' }} accept=".pdf,image/*" multiple onChange={(e) => { if (e.target.files) { setUploadedFiles(prev => [...prev, ...Array.from(e.target.files!)]); }}}/>
