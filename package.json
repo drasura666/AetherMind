@@ -11,8 +11,6 @@
     "db:push": "drizzle-kit push"
   },
   "dependencies": {
-    "next-themes": "^0.4.6",
-    "react-markdown": "^9.0.1",
     "@google/genai": "^1.15.0",
     "@hookform/resolvers": "^3.10.0",
     "@jridgewell/trace-mapping": "^0.3.25",
