@@ -15,6 +15,7 @@ import {
 import { ChatMessage } from '@/types/ai';
 import { useAPIKeys } from '@/hooks/use-api-keys';
 import { AI_PROVIDERS, sendAIRequest } from '@/lib/ai-providers';
+import { autoSelectModel } from '@/lib/auto-model-selector';
 import { useToast } from '@/hooks/use-toast';
 
 export function ChatInterface() {
@@ -75,12 +76,19 @@ export function ChatInterface() {
     try {
       const apiKey = getDecryptedKey(selectedProvider);
       if (!apiKey) throw new Error('No valid API key found');
-      const response = await sendAIRequest(
-        selectedProvider,
-        selectedModel,
-        [...messages, userMessage],
-        apiKey
-      );
+      const autoModel = autoSelectModel(selectedProvider, userMessage.content);
+
+const response = await sendAIRequest(
+  selectedProvider,
+  autoModel || selectedModel,
+  [...messages, userMessage],
+  apiKey
+);
+
+toast({
+  title: "Auto Model Selected",
+  description: `${autoModel || selectedModel} from ${providerConfig?.displayName}`,
+});
       const assistantMessage: ChatMessage = {
         id: (Date.now() + 2).toString(),
         role: 'assistant',
