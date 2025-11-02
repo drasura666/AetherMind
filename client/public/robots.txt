@@ -1,5 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://dr-asura-d1sc.onrender.com/sitemap.xml
-# Forcing cache update
